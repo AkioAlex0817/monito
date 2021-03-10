@@ -1,131 +1,38 @@
-import 'dart:convert';
-
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:monito/Database/DatabaseProvider.dart';
 import 'package:monito/Helper/Constants.dart';
 import 'package:monito/Helper/Helper.dart';
-import 'package:monito/Helper/HttpHelper.dart';
 import 'package:monito/Helper/LangHelper.dart';
-import 'package:monito/Pages/PurchasingPage/Model/PurchasingModel.dart';
-import 'package:monito/Pages/SettingPage/Model/SupplierModel.dart';
+import 'package:monito/Pages/PurchasedPage/Model/PurchasedModel.dart';
+import 'package:monito/Pages/WebPages/WebPage.dart';
 import 'package:monito/Widgets/LabelWidget.dart';
 import 'package:monito/Widgets/LoadingButton.dart';
 import 'package:monito/Widgets/ZoomOverlayWidget.dart';
 import 'package:monito/Helper/IntExtensions.dart';
+import 'package:monito/main.dart';
+import 'package:page_transition/page_transition.dart';
+import 'package:sprintf/sprintf.dart';
 
-import 'Formatter/CurrencyInputFormatter.dart';
+class PurchasedDetailPage extends StatefulWidget {
+  PurchasedModel purchasedModel;
 
-class PublishPage extends StatefulWidget {
-  final PurchasingModel purchasingModel;
-
-  PublishPage({Key key, @required this.purchasingModel});
+  PurchasedDetailPage({Key key, @required this.purchasedModel}) : super(key: key);
 
   @override
-  _PublishPageState createState() => _PublishPageState();
+  _PurchasedDetailPageState createState() => _PurchasedDetailPageState();
 }
 
-class _PublishPageState extends State<PublishPage> {
-  final DatabaseProvider _databaseProvider = DatabaseProvider.db;
-  List<SupplierModel> suppliers = [];
-  bool _isLoading = false;
+class _PurchasedDetailPageState extends State<PurchasedDetailPage> {
   bool _draggableContentWidget = false;
-  int currentSupplier = 0;
-
-  final buyPriceController = TextEditingController();
-  FocusNode buyPriceNode;
-
-  @override
-  void initState() {
-    super.initState();
-    currentSupplier = 0;
-    SystemChrome.setPreferredOrientations([
-      DeviceOrientation.portraitUp,
-      DeviceOrientation.portraitDown,
-    ]);
-    buyPriceNode = FocusNode();
-    buyPriceNode.addListener(() {
-      if (buyPriceNode.hasFocus) {
-        if (buyPriceController.text.length > 0) {
-          buyPriceController.selection = TextSelection(baseOffset: 0, extentOffset: buyPriceController.text.length);
-        }
-      }
-    });
-    _init();
-  }
-
-  _init() async {
-    List<Map<String, dynamic>> temps = await _databaseProvider.getAllSuppliers();
-    suppliers.add(SupplierModel(0, ""));
-    for (var item in temps) {
-      suppliers.add(SupplierModel.fromJson(item));
-    }
-    buyPriceController.text = "0";
-    setState(() {
-
-    });
-  }
-
-  @override
-  void dispose() {
-    buyPriceController?.dispose();
-    buyPriceNode?.dispose();
-    super.dispose();
-  }
-
-  _publish() async {
-    if (_isLoading) return;
-    String price = buyPriceController.text.trim().replaceAll(",", "");
-    if (Helper.isNullOrEmpty(price) || int.parse(price) == 0) {
-      Helper.showToast("Please insert price", false);
-      return;
-    }
-    if (currentSupplier == 0) {
-      Helper.showToast("Please Select Supplier", false);
-      return;
-    }
-
-    setState(() {
-      _isLoading = true;
-    });
-    String url = Constants.URL + "api/purchased";
-    var response = await HttpHelper.authPost(context, url, {'asin': widget.purchasingModel.asin, 'cost_price': price, 'supplier': currentSupplier.toString()}, {}, false);
-    if (mounted) {
-      if (response != null) {
-        var result = json.decode(response.body);
-        if (result['result'] == "success") {
-          setState(() {
-            _isLoading = false;
-          });
-          Helper.showToast(LangHelper.SUCCESS, true);
-        } else {
-          _errorHandler();
-        }
-      } else {
-        _errorHandler();
-      }
-    }
-  }
-
-  _errorHandler() {
-    if (mounted) {
-      setState(() {
-        _isLoading = false;
-      });
-      Helper.showToast(LangHelper.FAILED, false);
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         centerTitle: true,
         backgroundColor: Constants.StatusBarColor,
-        title: Text("仕入れ情報", style: TextStyle(color: Colors.white)),
+        title: Text("商品情報", style: TextStyle(color: Colors.white)),
       ),
       backgroundColor: Constants.BackgroundColor,
       body: SafeArea(
@@ -153,12 +60,15 @@ class _PublishPageState extends State<PublishPage> {
                                     decoration: BoxDecoration(border: Border.all(color: Colors.black12, width: 1, style: BorderStyle.solid), borderRadius: BorderRadius.circular(10)),
                                     child: AspectRatio(
                                       aspectRatio: 1,
-                                      child: CachedNetworkImage(
-                                        placeholder: (context, url) => CupertinoActivityIndicator(radius: 10),
-                                        imageUrl: Helper.imageURL(widget.purchasingModel.photo),
-                                        errorWidget: (context, url, error) => Icon(
-                                          Icons.error,
-                                          color: Colors.red,
+                                      child: Hero(
+                                        tag: "purchased_image_" + widget.purchasedModel.asin,
+                                        child: CachedNetworkImage(
+                                          placeholder: (context, url) => CupertinoActivityIndicator(radius: 10),
+                                          imageUrl: Helper.imageURL(widget.purchasedModel.photo),
+                                          errorWidget: (context, url, error) => Icon(
+                                            Icons.error,
+                                            color: Colors.red,
+                                          ),
                                         ),
                                       ),
                                     ),
@@ -174,15 +84,21 @@ class _PublishPageState extends State<PublishPage> {
                                       children: [
                                         SizedBox(
                                           height: 60,
-                                          child: Container(
-                                            alignment: Alignment.topLeft,
-                                            child: Text(
-                                              widget.purchasingModel.title,
-                                              textAlign: TextAlign.left,
-                                              style: TextStyle(color: Colors.black, fontSize: 13.5, fontWeight: FontWeight.bold),
-                                              maxLines: 3,
-                                              softWrap: true,
-                                              overflow: TextOverflow.ellipsis,
+                                          child: Hero(
+                                            tag: "purchased_title_" + widget.purchasedModel.asin,
+                                            child: Container(
+                                              alignment: Alignment.topLeft,
+                                              child: Material(
+                                                type: MaterialType.transparency,
+                                                child: Text(
+                                                  widget.purchasedModel.title,
+                                                  textAlign: TextAlign.left,
+                                                  style: TextStyle(color: Colors.black, fontSize: 13.5, fontWeight: FontWeight.bold),
+                                                  maxLines: 3,
+                                                  softWrap: true,
+                                                  overflow: TextOverflow.ellipsis,
+                                                ),
+                                              ),
                                             ),
                                           ),
                                         ),
@@ -190,7 +106,7 @@ class _PublishPageState extends State<PublishPage> {
                                           height: 30,
                                           child: Container(
                                             alignment: Alignment.centerLeft,
-                                            child: Text(widget.purchasingModel.category_name, style: TextStyle(color: Colors.red, fontSize: 14, fontWeight: FontWeight.bold)),
+                                            child: Text(widget.purchasedModel.category_name, style: TextStyle(color: Colors.red, fontSize: 14, fontWeight: FontWeight.bold)),
                                           ),
                                         ),
                                         SizedBox(
@@ -201,10 +117,10 @@ class _PublishPageState extends State<PublishPage> {
                                               color: Colors.white,
                                               child: InkWell(
                                                 onLongPress: () {
-                                                  Helper.clipBoardWidget(widget.purchasingModel.asin, context);
+                                                  Helper.clipBoardWidget(widget.purchasedModel.asin, context);
                                                 },
                                                 child: Text(
-                                                  "ASIN: ${widget.purchasingModel.asin}",
+                                                  "ASIN: ${widget.purchasedModel.asin}",
                                                   style: TextStyle(color: Colors.black54, fontSize: 12, fontWeight: FontWeight.bold),
                                                 ),
                                               ),
@@ -223,7 +139,7 @@ class _PublishPageState extends State<PublishPage> {
                                                   style: TextStyle(color: Colors.black54, fontSize: 12, fontWeight: FontWeight.bold),
                                                 ),
                                                 Text(
-                                                  Helper.formatDate(DateTime.parse(widget.purchasingModel.created_at), 'yyyy-MM-dd'),
+                                                  Helper.formatDate(DateTime.parse(widget.purchasedModel.created_at), 'yyyy-MM-dd'),
                                                   style: TextStyle(color: Colors.black, fontSize: 12, fontWeight: FontWeight.bold),
                                                 )
                                               ],
@@ -248,7 +164,7 @@ class _PublishPageState extends State<PublishPage> {
                                 flex: 2,
                                 child: LabelWidget(
                                   color: Color.fromARGB(255, 0, 154, 191),
-                                  label: "仕入れ価格",
+                                  label: "ランキング",
                                   fontSize: 14,
                                 ),
                               ),
@@ -256,20 +172,9 @@ class _PublishPageState extends State<PublishPage> {
                                 flex: 5,
                                 child: Container(
                                   alignment: Alignment.centerRight,
-                                  padding: EdgeInsets.only(left: 20),
-                                  child: TextFormField(
-                                    controller: buyPriceController,
-                                    focusNode: buyPriceNode,
-                                    textAlign: TextAlign.end,
-                                    keyboardType: TextInputType.number,
-                                    inputFormatters: <TextInputFormatter>[FilteringTextInputFormatter.digitsOnly, CurrencyInputFormatter()],
-                                    decoration: InputDecoration(
-                                      contentPadding: EdgeInsets.fromLTRB(16, 10, 16, 10),
-                                      enabledBorder: OutlineInputBorder(borderSide: const BorderSide(color: Colors.black, width: 0.5)),
-                                      focusedBorder: OutlineInputBorder(
-                                        borderSide: const BorderSide(color: Colors.black, width: 0.5),
-                                      ),
-                                    ),
+                                  child: Text(
+                                    sprintf("%s位", [currency.format(widget.purchasedModel.sales_rank)]),
+                                    style: TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.bold),
                                   ),
                                 ),
                               )
@@ -285,38 +190,49 @@ class _PublishPageState extends State<PublishPage> {
                                 flex: 2,
                                 child: LabelWidget(
                                   color: Color.fromARGB(255, 0, 154, 191),
-                                  label: "仕入れ先",
+                                  label: "新品価格",
                                   fontSize: 14,
                                 ),
                               ),
                               Expanded(
                                 flex: 5,
                                 child: Container(
-                                  decoration: BoxDecoration(border: Border.all(color: Colors.black, width: 0.5), borderRadius: BorderRadius.circular(4)),
                                   alignment: Alignment.centerRight,
-                                  margin: EdgeInsets.only(left: 20),
-                                  padding: EdgeInsets.symmetric(horizontal: 10),
-                                  child: DropdownButton(
-                                    underline: Container(),
-                                    isExpanded: true,
-                                    items: suppliers.map((SupplierModel e) {
-                                      return new DropdownMenuItem(
-                                        child: Text(e.name),
-                                        value: e.id,
-                                      );
-                                    }).toList(),
-                                    value: currentSupplier,
-                                    onChanged: (value) {
-                                      setState(() {
-                                        currentSupplier = value;
-                                      });
-                                    },
+                                  child: Text(
+                                    sprintf("%s円", [currency.format(widget.purchasedModel.cart_price == -1 ? widget.purchasedModel.new_price : widget.purchasedModel.cart_price)]),
+                                    style: TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.bold),
                                   ),
                                 ),
                               )
                             ],
                           ),
                         ),
+                        Divider(height: 10, color: Colors.black),
+                        Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 15),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                flex: 2,
+                                child: LabelWidget(
+                                  color: Color.fromARGB(255, 0, 154, 191),
+                                  label: "新品出品者数",
+                                  fontSize: 14,
+                                ),
+                              ),
+                              Expanded(
+                                flex: 5,
+                                child: Container(
+                                  alignment: Alignment.centerRight,
+                                  child: Text(
+                                    sprintf("%s人", [currency.format(widget.purchasedModel.offers)]),
+                                    style: TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                              )
+                            ],
+                          ),
+                        )
                       ],
                     ),
                   ),
@@ -339,7 +255,7 @@ class _PublishPageState extends State<PublishPage> {
                               child: CupertinoActivityIndicator(radius: 10),
                             ),
                           ),
-                          imageUrl: "https://graph.keepa.com/pricehistory.png?asin=" + widget.purchasingModel.asin + "&domain=co.jp&salesrank=1&width=600&height=200&range=90",
+                          imageUrl: "https://graph.keepa.com/pricehistory.png?asin=" + widget.purchasedModel.asin + "&domain=co.jp&salesrank=1&width=600&height=200&range=90",
                           errorWidget: (context, url, error) => Icon(Icons.error, color: Colors.red),
                         ),
                       ),
@@ -365,7 +281,18 @@ class _PublishPageState extends State<PublishPage> {
                               loadingColor: Colors.black,
                               loadingSize: 20,
                               borderRadius: 10,
-                              onPressed: () {},
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    PageTransition(
+                                        child: WebPage(
+                                          url: "https://sellercentral.amazon.co.jp/product-search/search?q=${widget.purchasedModel.asin}&ref_=xx_addlisting_dnav_home",
+                                        ),
+                                        type: PageTransitionType.bottomToTop,
+                                        inheritTheme: true,
+                                        curve: Curves.easeIn,
+                                        ctx: context));
+                              },
                             ),
                           ),
                           20.width,
@@ -373,16 +300,39 @@ class _PublishPageState extends State<PublishPage> {
                             flex: 1,
                             child: LoadingButton(
                               color: Constants.ButtonColor,
-                              disabled: _isLoading,
-                              loading: _isLoading,
-                              title: "仕入れ済み",
+                              disabled: false,
+                              loading: false,
+                              title: "登録解除",
                               fontColor: Colors.white,
                               fontSize: 15,
                               loadingColor: Colors.black,
                               loadingSize: 20,
                               borderRadius: 10,
                               onPressed: () {
-                                _publish();
+                                showCupertinoDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return CupertinoAlertDialog(
+                                        title: Text("Are you sure delete it?"),
+                                        actions: [
+                                          CupertinoDialogAction(
+                                            isDefaultAction: true,
+                                            child: Text(LangHelper.YES),
+                                            onPressed: () {
+                                              Navigator.of(context, rootNavigator: true).pop("Discard");
+                                              Navigator.pop(context, "Remove");
+                                            },
+                                          ),
+                                          CupertinoDialogAction(
+                                            child: Text(LangHelper.NO),
+                                            isDestructiveAction: true,
+                                            onPressed: () {
+                                              Navigator.of(context, rootNavigator: true).pop("Discard");
+                                            },
+                                          )
+                                        ],
+                                      );
+                                    });
                               },
                             ),
                           ),
@@ -461,7 +411,7 @@ class _PublishPageState extends State<PublishPage> {
               Container(
                 margin: EdgeInsets.only(top: 40),
                 color: Colors.white,
-                child: ZoomOverlayWidget(asin: widget.purchasingModel.asin),
+                child: ZoomOverlayWidget(asin: widget.purchasedModel.asin),
               )
             ],
           ),

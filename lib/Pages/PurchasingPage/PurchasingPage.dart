@@ -1,10 +1,14 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:monito/Database/DatabaseProvider.dart';
 import 'package:monito/Helper/Constants.dart';
+import 'package:monito/Helper/Helper.dart';
 import 'package:monito/Helper/HttpHelper.dart';
+import 'package:monito/Helper/LangHelper.dart';
 import 'package:monito/Pages/PurchasingPage/Model/PurchasingModel.dart';
 import 'package:monito/Pages/PurchasingPage/SubPages/PurchasingDetailPage.dart';
 import 'package:monito/Pages/PurchasingPage/Widgets/PurchasingListItem.dart';
@@ -21,6 +25,7 @@ class _PurchasingPageState extends State<PurchasingPage> {
   ScrollController _scrollController = new ScrollController();
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
   bool _isError = false;
+  bool _isLoading = false;
   int _currentPage = 1;
   bool _hasNextPage = true;
   bool _isInit = false;
@@ -93,6 +98,32 @@ class _PurchasingPageState extends State<PurchasingPage> {
     }
   }
 
+  _removePurchasing(int index) async {
+    if (_isLoading) return;
+    PurchasingModel removeItem = purchasingList[index];
+    setState(() {
+      _isLoading = true;
+    });
+    String url = Constants.URL + "api/purchasing?asin=" + removeItem.asin;
+    var response = await HttpHelper.authDelete(url, {});
+    if (mounted) {
+      if (response != null) {
+        var result = json.decode(response.body);
+        if (result['result'] == "success") {
+          Helper.showToast(LangHelper.SUCCESS, true);
+          purchasingList.removeAt(index);
+        } else {
+          Helper.showToast(LangHelper.FAILED, false);
+        }
+      } else {
+        Helper.showToast(LangHelper.FAILED, false);
+      }
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -134,11 +165,52 @@ class _PurchasingPageState extends State<PurchasingPage> {
                                       : Container(),
                                 );
                               }
-                              return PurchasingListItem(
-                                  purchasingModel: purchasingList[index],
-                                  onPressed: () {
-                                    Navigator.push(context, PageTransition(type: PageTransitionType.fade, child: PurchasingDetailPage(purchasingModel: purchasingList[index]), inheritTheme: true, curve: Curves.easeIn, ctx: context));
-                                  });
+                              return Slidable(
+                                actionPane: SlidableDrawerActionPane(),
+                                actionExtentRatio: 0.25,
+                                child: PurchasingListItem(
+                                    purchasingModel: purchasingList[index],
+                                    onPressed: () {
+                                      Navigator.push(context, PageTransition(type: PageTransitionType.fade, child: PurchasingDetailPage(purchasingModel: purchasingList[index]), inheritTheme: true, curve: Curves.easeIn, ctx: context));
+                                    }),
+                                secondaryActions: <Widget>[
+                                  IconSlideAction(
+                                    onTap: () {
+                                      showCupertinoDialog(
+                                        context: context,
+                                        builder: (context) {
+                                          return CupertinoAlertDialog(
+                                            title: Text("Are you sure delete it?"),
+                                            actions: [
+                                              CupertinoDialogAction(
+                                                isDefaultAction: true,
+                                                child: Text(LangHelper.YES),
+                                                onPressed: () {
+                                                  Navigator.of(context, rootNavigator: true).pop("Discard");
+                                                  _removePurchasing(index);
+                                                },
+                                              ),
+                                              CupertinoDialogAction(
+                                                child: Text(LangHelper.NO),
+                                                isDestructiveAction: true,
+                                                onPressed: () {
+                                                  Navigator.of(context, rootNavigator: true).pop("Discard");
+                                                },
+                                              )
+                                            ],
+                                          );
+                                        },
+                                      );
+                                    },
+                                    iconWidget: Container(
+                                      decoration: BoxDecoration(color: Colors.red),
+                                      child: Center(
+                                        child: Icon(Icons.delete, size: 25, color: Colors.white),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              );
                             },
                             separatorBuilder: (context, index) => Divider(color: Colors.transparent),
                             itemCount: purchasingList.length + 1,
@@ -147,6 +219,11 @@ class _PurchasingPageState extends State<PurchasingPage> {
                   : Positioned.fill(
                       child: Container(color: Constants.BackgroundColor, child: Loading()),
                     ),
+              _isLoading
+                  ? Positioned.fill(
+                      child: Container(color: Colors.transparent, child: Loading()),
+                    )
+                  : Container(),
               _isError
                   ? Positioned.fill(
                       child: Container(

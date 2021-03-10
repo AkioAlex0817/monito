@@ -1,13 +1,20 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:monito/Database/DatabaseProvider.dart';
 import 'package:monito/Helper/Constants.dart';
+import 'package:monito/Helper/Helper.dart';
 import 'package:monito/Helper/HttpHelper.dart';
+import 'package:monito/Helper/LangHelper.dart';
 import 'package:monito/Pages/PurchasedPage/Model/PurchasedModel.dart';
 import 'package:monito/Pages/PurchasedPage/Widgets/PurchasedListItem.dart';
 import 'package:monito/Widgets/Loading.dart';
+import 'package:page_transition/page_transition.dart';
+
+import 'SubPages/PurchasedDetailPage.dart';
 
 class PurchasedPage extends StatefulWidget {
   @override
@@ -19,6 +26,7 @@ class _PurchasedPageState extends State<PurchasedPage> {
   ScrollController _scrollController = new ScrollController();
   GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey();
   bool _isError = false;
+  bool _isLoading = false;
   int _currentPage = 1;
   bool _hasNextPage = true;
   bool _isInit = false;
@@ -39,6 +47,12 @@ class _PurchasedPageState extends State<PurchasedPage> {
   _init() async {
     categories = await _databaseProvider.getAllCategories();
     _getPurchasedList();
+  }
+
+  @override
+  void dispose() {
+    _scrollController?.dispose();
+    super.dispose();
   }
 
   _getPurchasedList() async {
@@ -85,6 +99,32 @@ class _PurchasedPageState extends State<PurchasedPage> {
     }
   }
 
+  _removePurchased(int index) async {
+    if (_isLoading) return;
+    PurchasedModel removeItem = purchasedList[index];
+    setState(() {
+      _isLoading = true;
+    });
+    String url = Constants.URL + "api/purchased?asin=" + removeItem.asin;
+    var response = await HttpHelper.authDelete(url, {});
+    if (mounted) {
+      if (response != null) {
+        var result = json.decode(response.body);
+        if (result['result'] == "success") {
+          Helper.showToast(LangHelper.SUCCESS, true);
+          purchasedList.removeAt(index);
+        } else {
+          Helper.showToast(LangHelper.FAILED, false);
+        }
+      } else {
+        Helper.showToast(LangHelper.FAILED, false);
+      }
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -124,11 +164,64 @@ class _PurchasedPageState extends State<PurchasedPage> {
                                     : Container(),
                               );
                             }
-                            return PurchasedListItem(
-                                purchasedModel: purchasedList[index],
-                                onPressed: () {
-                                  //Navigator.push(context, PageTransition(type: PageTransitionType.fade, child: PurchasingDetailPage(purchasingModel: purchasingList[index]), inheritTheme: true, curve: Curves.easeIn, ctx: context));
-                                });
+                            return Slidable(
+                              actionPane: SlidableDrawerActionPane(),
+                              actionExtentRatio: 0.25,
+                              child: PurchasedListItem(
+                                  purchasedModel: purchasedList[index],
+                                  onPressed: () {
+                                    Navigator.push(
+                                        context,
+                                        PageTransition(
+                                          type: PageTransitionType.fade,
+                                          child: PurchasedDetailPage(purchasedModel: purchasedList[index]),
+                                          inheritTheme: true,
+                                          curve: Curves.easeIn,
+                                          ctx: context,
+                                        )).then((value){
+                                      if (value == "Remove") {
+                                        _removePurchased(index);
+                                      }
+                                    });
+                                  }),
+                              secondaryActions: <Widget>[
+                                IconSlideAction(
+                                  onTap: () {
+                                    showCupertinoDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return CupertinoAlertDialog(
+                                          title: Text("Are you sure delete it?"),
+                                          actions: [
+                                            CupertinoDialogAction(
+                                              isDefaultAction: true,
+                                              child: Text(LangHelper.YES),
+                                              onPressed: () {
+                                                Navigator.of(context, rootNavigator: true).pop("Discard");
+                                                _removePurchased(index);
+                                              },
+                                            ),
+                                            CupertinoDialogAction(
+                                              child: Text(LangHelper.NO),
+                                              isDestructiveAction: true,
+                                              onPressed: () {
+                                                Navigator.of(context, rootNavigator: true).pop("Discard");
+                                              },
+                                            )
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  },
+                                  iconWidget: Container(
+                                    decoration: BoxDecoration(color: Colors.red),
+                                    child: Center(
+                                      child: Icon(Icons.delete, size: 25, color: Colors.white),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            );
                           },
                           separatorBuilder: (context, index) => Divider(color: Colors.transparent),
                           itemCount: purchasedList.length + 1,
@@ -137,6 +230,11 @@ class _PurchasedPageState extends State<PurchasedPage> {
                 : Positioned.fill(
                     child: Container(color: Constants.BackgroundColor, child: Loading()),
                   ),
+            _isLoading
+                ? Positioned.fill(
+                    child: Container(color: Colors.transparent, child: Loading()),
+                  )
+                : Container(),
             _isError
                 ? Positioned.fill(
                     child: Container(

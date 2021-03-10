@@ -136,6 +136,17 @@ class DatabaseProvider {
     return true;
   }
 
+  Future<bool> removeSupplier(int id) async {
+    final Database db = await database;
+    try {
+      await db.delete('suppliers', where: "id = ?", whereArgs: [id]);
+    } catch (err) {
+      print("Remove supplier Error: $err");
+      return false;
+    }
+    return true;
+  }
+
   Future<bool> insertOrUpdateCategory(String cat_id, String name, String context_free_name) async {
     final Database db = await database;
     Map<String, dynamic> item = {'cat_id': cat_id, 'name': name, 'context_free_name': context_free_name};

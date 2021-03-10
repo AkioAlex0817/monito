@@ -1,11 +1,14 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:monito/Database/DatabaseProvider.dart';
 import 'package:monito/Helper/Constants.dart';
+import 'package:monito/Helper/Helper.dart';
 import 'package:monito/Helper/HttpHelper.dart';
+import 'package:monito/Helper/LangHelper.dart';
 import 'package:monito/Pages/SettingPage/Model/SupplierModel.dart';
 import 'package:monito/Pages/SettingPage/Overlay/AddSupplierOverlay.dart';
 import 'package:monito/Widgets/Loading.dart';
@@ -19,6 +22,7 @@ class _SuppliersSettingState extends State<SuppliersSetting> {
   final DatabaseProvider _databaseProvider = DatabaseProvider.db;
   bool _isError = false;
   bool _isLoading = false;
+  bool _removeLoading = false;
   bool _isInit = false;
   bool saveStatus = false;
   List<SupplierModel> suppliers = [];
@@ -69,11 +73,37 @@ class _SuppliersSettingState extends State<SuppliersSetting> {
     }
   }
 
-  _successAddSupplier(SupplierModel supplierModel){
+  _successAddSupplier(SupplierModel supplierModel) {
     this.suppliers.add(supplierModel);
-    setState(() {
+    setState(() {});
+  }
 
+  _removeSupplier(int index) async {
+    if (_removeLoading) return;
+    SupplierModel removeItem = suppliers[index];
+    setState(() {
+      _removeLoading = true;
     });
+    String url = Constants.URL + "api/setting/supplier?id=" + removeItem.id.toString();
+    var response = await HttpHelper.authDelete(url, {});
+    if (mounted) {
+      if (response != null) {
+        var result = json.decode(response.body);
+        if (result['result'] == "success") {
+          Helper.showToast(LangHelper.SUCCESS, true);
+          await _databaseProvider.removeSupplier(removeItem.id);
+          suppliers.removeAt(index);
+
+        } else {
+          Helper.showToast(LangHelper.FAILED, false);
+        }
+      } else {
+        Helper.showToast(LangHelper.FAILED, false);
+      }
+      setState(() {
+        _removeLoading = false;
+      });
+    }
   }
 
   @override
@@ -120,8 +150,55 @@ class _SuppliersSettingState extends State<SuppliersSetting> {
                       : Positioned.fill(
                           child: ListView.separated(
                               itemBuilder: (BuildContext context, int index) {
-                                return ListTile(
-                                  title: Text(suppliers[index].name),
+                                return Container(
+                                  margin: EdgeInsets.symmetric(horizontal: 10),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    shape: BoxShape.rectangle,
+                                    borderRadius: BorderRadius.circular(10),
+                                    boxShadow: [
+                                      BoxShadow(color: Colors.black26, blurRadius: 5.0, offset: const Offset(0.0, 5.0)),
+                                    ],
+                                  ),
+                                  child: ListTile(
+                                    title: Text(suppliers[index].name),
+                                    trailing: Material(
+                                      child: InkWell(
+                                        customBorder: CircleBorder(),
+                                        onTap: () {
+                                          showCupertinoDialog(
+                                            context: context,
+                                            builder: (context) {
+                                              return CupertinoAlertDialog(
+                                                title: Text("Are you sure delete it?"),
+                                                actions: [
+                                                  CupertinoDialogAction(
+                                                    isDefaultAction: true,
+                                                    child: Text(LangHelper.YES),
+                                                    onPressed: () {
+                                                      Navigator.of(context, rootNavigator: true).pop("Discard");
+                                                      _removeSupplier(index);
+                                                    },
+                                                  ),
+                                                  CupertinoDialogAction(
+                                                    child: Text(LangHelper.NO),
+                                                    isDestructiveAction: true,
+                                                    onPressed: () {
+                                                      Navigator.of(context, rootNavigator: true).pop("Discard");
+                                                    },
+                                                  )
+                                                ],
+                                              );
+                                            },
+                                          );
+                                        },
+                                        child: Padding(
+                                          padding: EdgeInsets.all(5),
+                                          child: Icon(Icons.delete, size: 25, color: Colors.red),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
                                 );
                               },
                               separatorBuilder: (context, index) => Divider(color: Colors.transparent),
@@ -130,6 +207,11 @@ class _SuppliersSettingState extends State<SuppliersSetting> {
               _isLoading
                   ? Positioned.fill(
                       child: Container(color: Constants.BackgroundColor, child: Loading()),
+                    )
+                  : Container(),
+              _removeLoading
+                  ? Positioned.fill(
+                      child: Container(color: Colors.transparent, child: Loading()),
                     )
                   : Container()
             ],
