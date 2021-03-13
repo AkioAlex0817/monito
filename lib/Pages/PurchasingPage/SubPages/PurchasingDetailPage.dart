@@ -8,6 +8,7 @@ import 'package:monito/Helper/LangHelper.dart';
 import 'package:monito/Pages/PublishPage/PublishPage.dart';
 import 'package:monito/Pages/PurchasingPage/Model/PurchasingModel.dart';
 import 'package:monito/Pages/SettingPage/SubPages/SuppliersSetting.dart';
+import 'package:monito/Pages/WebPages/WebPage.dart';
 import 'package:monito/Widgets/LabelWidget.dart';
 import 'package:monito/Widgets/LoadingButton.dart';
 import 'package:monito/Widgets/ZoomOverlayWidget.dart';
@@ -55,7 +56,7 @@ class _PurchasingDetailPageState extends State<PurchasingDetailPage> {
       context: context,
       builder: (context) {
         return CupertinoAlertDialog(
-          title: Text("Empty Suppliers setting, Go to Setting Page?"),
+          title: Text("仕入れ先情報が登録されていません。"),
           actions: [
             CupertinoDialogAction(
               isDefaultAction: true,
@@ -195,7 +196,7 @@ class _PurchasingDetailPageState extends State<PurchasingDetailPage> {
                                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                 children: [
                                                   Text(
-                                                    "",
+                                                    "JAN: ${widget.purchasingModel.jan}",
                                                     style: TextStyle(color: Colors.black54, fontSize: 12, fontWeight: FontWeight.bold),
                                                   ),
                                                   Text(
@@ -223,7 +224,7 @@ class _PurchasingDetailPageState extends State<PurchasingDetailPage> {
                                 Expanded(
                                   flex: 2,
                                   child: LabelWidget(
-                                    color: Color.fromARGB(255, 0, 154, 191),
+                                    color: Constants.ButtonColor,
                                     label: "ランキング",
                                     fontSize: 14,
                                   ),
@@ -233,7 +234,7 @@ class _PurchasingDetailPageState extends State<PurchasingDetailPage> {
                                   child: Container(
                                     alignment: Alignment.centerRight,
                                     child: Text(
-                                      sprintf("%s位 → %s位", [currency.format(widget.purchasingModel.sales_rank), currency.format(widget.purchasingModel.sales_rank)]),
+                                      sprintf("%s位", [widget.purchasingModel.sales_rank.formatter]),
                                       style: TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.bold),
                                     ),
                                   ),
@@ -249,7 +250,7 @@ class _PurchasingDetailPageState extends State<PurchasingDetailPage> {
                                 Expanded(
                                   flex: 2,
                                   child: LabelWidget(
-                                    color: Color.fromARGB(255, 0, 154, 191),
+                                    color: Constants.ButtonColor,
                                     label: "新品価格",
                                     fontSize: 14,
                                   ),
@@ -259,7 +260,18 @@ class _PurchasingDetailPageState extends State<PurchasingDetailPage> {
                                   child: Container(
                                     alignment: Alignment.centerRight,
                                     child: Text(
-                                      sprintf("%s円", [currency.format(widget.purchasingModel.cart_price == -1 ? widget.purchasingModel.new_price : widget.purchasingModel.cart_price)]),
+                                      sprintf(
+                                        "%s円 → %s円",
+                                        widget.purchasingModel.cart_price == -1
+                                            ? [
+                                                widget.purchasingModel.last_new_price.formatter,
+                                                widget.purchasingModel.new_price.formatter,
+                                              ]
+                                            : [
+                                                widget.purchasingModel.last_cart_price.formatter,
+                                                widget.purchasingModel.cart_price.formatter,
+                                              ],
+                                      ),
                                       style: TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.bold),
                                     ),
                                   ),
@@ -275,7 +287,7 @@ class _PurchasingDetailPageState extends State<PurchasingDetailPage> {
                                 Expanded(
                                   flex: 2,
                                   child: LabelWidget(
-                                    color: Color.fromARGB(255, 0, 154, 191),
+                                    color: Constants.ButtonColor,
                                     label: "新品出品者数",
                                     fontSize: 14,
                                   ),
@@ -285,7 +297,7 @@ class _PurchasingDetailPageState extends State<PurchasingDetailPage> {
                                   child: Container(
                                     alignment: Alignment.centerRight,
                                     child: Text(
-                                      sprintf("%s人", [currency.format(widget.purchasingModel.offers)]),
+                                      sprintf("%s人", [widget.purchasingModel.offers.formatter]),
                                       style: TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.bold),
                                     ),
                                   ),
@@ -341,7 +353,18 @@ class _PurchasingDetailPageState extends State<PurchasingDetailPage> {
                                 loadingColor: Colors.black,
                                 loadingSize: 20,
                                 borderRadius: 10,
-                                onPressed: () {},
+                                onPressed: () {
+                                  Navigator.push(
+                                      context,
+                                      PageTransition(
+                                          child: WebPage(
+                                            url: "https://sellercentral.amazon.co.jp/product-search/search?q=${widget.purchasingModel.asin}&ref_=xx_addlisting_dnav_home",
+                                          ),
+                                          type: PageTransitionType.bottomToTop,
+                                          inheritTheme: true,
+                                          curve: Curves.easeIn,
+                                          ctx: context));
+                                },
                               ),
                             ),
                             20.width,
@@ -375,7 +398,18 @@ class _PurchasingDetailPageState extends State<PurchasingDetailPage> {
                                 loadingColor: Colors.black,
                                 loadingSize: 20,
                                 borderRadius: 10,
-                                onPressed: () {},
+                                onPressed: () {
+                                  Navigator.push(
+                                      context,
+                                      PageTransition(
+                                          child: WebPage(
+                                            url: Constants.AmazonURL + widget.purchasingModel.asin,
+                                          ),
+                                          type: PageTransitionType.bottomToTop,
+                                          inheritTheme: true,
+                                          curve: Curves.easeIn,
+                                          ctx: context));
+                                },
                               ),
                             )
                           ],

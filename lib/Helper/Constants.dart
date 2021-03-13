@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 class Constants {
   static const SharePreferencesKey = "token_string";
 
-  //static const URL = "https://laaf2020.com/";
-  static const URL = "http://192.168.31.200/fastalert/public/";
-  static const client_secret = "XUF3DtumtQCTAbTfNe2y5Xpz9xsqnkHYQOaMNajb";
+  //static const URL = "http://192.168.31.200/fastalert/public/";
+  //static const client_secret = "ylCE04LJVxh11z7S9ZIgxgnBYt339KucraKmowtI";
+  static const URL = "https://umc-monito.com/";
+  static const client_secret = "qUHRHY9TzZfi0Nlcxv3abbwgLL3Svf0zicCP6kRv";
+  static const AmazonURL = "https://www.amazon.co.jp/dp/";
   static const grant_type_password = "password";
-  static const client_id = "4";
+  static const client_id = "2";
   static const scope = "*";
   static const KeepaURL = "https://keepa.com/iframe_addon.html#5-0-";
   static const ImageURL = "https://images-na.ssl-images-amazon.com/images/I/";
@@ -30,6 +32,8 @@ class Constants {
   static const int PurchasingPage = 4;
   static const int PurchasedPage = 5;
   static const int SettingPage = 6;
+  static const int RDBPurchasingPage = 7;
+  static const int RDBPurchasedPage = 8;
 
   //UnAuth User info
   static const UnAuthTrackCategoryKey = "track_category_key";
@@ -37,6 +41,4 @@ class Constants {
 
   //Page Transition Time milliseconds
   static const int TransitionTime = 200;
-
-
 }

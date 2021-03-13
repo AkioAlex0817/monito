@@ -8,11 +8,13 @@ import 'package:monito/Helper/Helper.dart';
 import 'package:monito/Helper/HttpHelper.dart';
 import 'package:monito/Helper/LangHelper.dart';
 import 'package:monito/Pages/AchievePage/Model/AchieveModel.dart';
+import 'package:monito/Pages/WebPages/WebPage.dart';
 import 'package:monito/Widgets/LabelWidget.dart';
 import 'package:monito/Widgets/LoadingButton.dart';
 import 'package:monito/Helper/IntExtensions.dart';
 import 'package:monito/Widgets/ZoomOverlayWidget.dart';
 import 'package:monito/main.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:sprintf/sprintf.dart';
 
 class AchieveDetailPage extends StatefulWidget {
@@ -29,27 +31,31 @@ class _AchieveDetailPageState extends State<AchieveDetailPage> {
   bool _isLoading = false;
 
   _addPurchasing() async {
-    if (_isLoading) return;
-    setState(() {
-      _isLoading = true;
-    });
-    String url = Constants.URL + "api/purchasing";
-    var response = await HttpHelper.authPost(context, url, {'asin': widget.achieveModel.asin}, {}, false);
-    if (mounted) {
-      if (response != null) {
-        var result = json.decode(response.body);
-        if (result['result'] == "success") {
-          setState(() {
-            _isLoading = false;
-            widget.achieveModel.isAddPurchasedList = true;
-          });
-          Helper.showToast(LangHelper.SUCCESS, true);
+    if (allowPurchasingList > 0) {
+      if (_isLoading) return;
+      setState(() {
+        _isLoading = true;
+      });
+      String url = Constants.URL + "api/purchasing";
+      var response = await HttpHelper.authPost(context, url, {'asin': widget.achieveModel.asin}, {}, false);
+      if (mounted) {
+        if (response != null) {
+          var result = json.decode(response.body);
+          if (result['result'] == "success") {
+            setState(() {
+              _isLoading = false;
+              widget.achieveModel.isAddPurchasedList = true;
+            });
+            Helper.showToast(LangHelper.SUCCESS, true);
+          } else {
+            _errorHandler();
+          }
         } else {
           _errorHandler();
         }
-      } else {
-        _errorHandler();
       }
+    } else {
+      Helper.showToast("この機能を利用するためにはプランをアップグレードしてください。", false);
     }
   }
 
@@ -196,7 +202,7 @@ class _AchieveDetailPageState extends State<AchieveDetailPage> {
                                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                               children: [
                                                 Text(
-                                                  "",
+                                                  "JAN: ${widget.achieveModel.jan}",
                                                   style: TextStyle(color: Colors.black54, fontSize: 12, fontWeight: FontWeight.bold),
                                                 ),
                                                 Text(
@@ -224,7 +230,7 @@ class _AchieveDetailPageState extends State<AchieveDetailPage> {
                               Expanded(
                                 flex: 2,
                                 child: LabelWidget(
-                                  color: Color.fromARGB(255, 0, 154, 191),
+                                  color: Constants.ButtonColor,
                                   label: "ランキング",
                                   fontSize: 14,
                                 ),
@@ -234,7 +240,7 @@ class _AchieveDetailPageState extends State<AchieveDetailPage> {
                                 child: Container(
                                   alignment: Alignment.centerRight,
                                   child: Text(
-                                    sprintf("%s位 → %s位", [currency.format(widget.achieveModel.achieveWishListModel.last_sales_rank), currency.format(widget.achieveModel.sales_rank)]),
+                                    sprintf("%s位 → %s位", [widget.achieveModel.achieveWishListModel.last_sales_rank.formatter, widget.achieveModel.sales_rank.formatter]),
                                     style: TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.bold),
                                   ),
                                 ),
@@ -250,7 +256,7 @@ class _AchieveDetailPageState extends State<AchieveDetailPage> {
                               Expanded(
                                 flex: 2,
                                 child: LabelWidget(
-                                  color: Color.fromARGB(255, 0, 154, 191),
+                                  color: Constants.ButtonColor,
                                   label: "新品価格",
                                   fontSize: 14,
                                 ),
@@ -260,10 +266,18 @@ class _AchieveDetailPageState extends State<AchieveDetailPage> {
                                 child: Container(
                                   alignment: Alignment.centerRight,
                                   child: Text(
-                                    sprintf("%s円 → %s円", [
-                                      currency.format(widget.achieveModel.cart_price == -1 ? widget.achieveModel.new_price : widget.achieveModel.cart_price),
-                                      currency.format(widget.achieveModel.achieveWishListModel.last_cart_price == -1 ? widget.achieveModel.achieveWishListModel.last_new_price : widget.achieveModel.achieveWishListModel.last_cart_price),
-                                    ]),
+                                    sprintf(
+                                      "%s円 → %s円",
+                                      widget.achieveModel.cart_price == -1
+                                          ? [
+                                              widget.achieveModel.last_new_price.formatter,
+                                              widget.achieveModel.new_price.formatter,
+                                            ]
+                                          : [
+                                              widget.achieveModel.last_cart_price.formatter,
+                                              widget.achieveModel.cart_price.formatter,
+                                            ],
+                                    ),
                                     style: TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.bold),
                                   ),
                                 ),
@@ -279,7 +293,7 @@ class _AchieveDetailPageState extends State<AchieveDetailPage> {
                               Expanded(
                                 flex: 2,
                                 child: LabelWidget(
-                                  color: Color.fromARGB(255, 0, 154, 191),
+                                  color: Constants.ButtonColor,
                                   label: "新品出品者数",
                                   fontSize: 14,
                                 ),
@@ -289,7 +303,7 @@ class _AchieveDetailPageState extends State<AchieveDetailPage> {
                                 child: Container(
                                   alignment: Alignment.centerRight,
                                   child: Text(
-                                    sprintf("%s人", [currency.format(widget.achieveModel.offers)]),
+                                    sprintf("%s人", [widget.achieveModel.offers.formatter]),
                                     style: TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.bold),
                                   ),
                                 ),
@@ -345,7 +359,18 @@ class _AchieveDetailPageState extends State<AchieveDetailPage> {
                               loadingColor: Colors.black,
                               loadingSize: 20,
                               borderRadius: 10,
-                              onPressed: () {},
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    PageTransition(
+                                        child: WebPage(
+                                          url: "https://sellercentral.amazon.co.jp/product-search/search?q=${widget.achieveModel.asin}&ref_=xx_addlisting_dnav_home",
+                                        ),
+                                        type: PageTransitionType.bottomToTop,
+                                        inheritTheme: true,
+                                        curve: Curves.easeIn,
+                                        ctx: context));
+                              },
                             ),
                           ),
                           20.width,
@@ -383,7 +408,18 @@ class _AchieveDetailPageState extends State<AchieveDetailPage> {
                               loadingColor: Colors.black,
                               loadingSize: 20,
                               borderRadius: 10,
-                              onPressed: () {},
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    PageTransition(
+                                        child: WebPage(
+                                          url: Constants.AmazonURL + widget.achieveModel.asin,
+                                        ),
+                                        type: PageTransitionType.bottomToTop,
+                                        inheritTheme: true,
+                                        curve: Curves.easeIn,
+                                        ctx: context));
+                              },
                             ),
                           )
                         ],

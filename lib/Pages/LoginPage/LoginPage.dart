@@ -8,6 +8,7 @@ import 'package:monito/Helper/Helper.dart';
 import 'package:monito/Helper/HttpHelper.dart';
 import 'package:monito/Widgets/Loading.dart';
 import 'package:monito/main.dart';
+import 'package:monito/Helper/IntExtensions.dart';
 
 class LoginPage extends StatefulWidget {
   @override
@@ -176,7 +177,7 @@ class _LoginPageState extends State<LoginPage> {
       }
     }
 
-    if(Navigator.canPop(context)){
+    if (Navigator.canPop(context)) {
       Navigator.pop(context);
     }
   }
@@ -214,7 +215,7 @@ class _LoginPageState extends State<LoginPage> {
                           Image.asset("assets/splash_icon.png", width: width * 0.4),
                         ],
                       ),
-                      SizedBox(height: 40),
+                      40.height,
                       TextField(
                         focusNode: _usernameNode,
                         controller: _usernameController,
@@ -233,7 +234,7 @@ class _LoginPageState extends State<LoginPage> {
                             enabledBorder: OutlineInputBorder(borderSide: const BorderSide(color: Colors.black, width: 0.5)),
                             focusedBorder: OutlineInputBorder(borderSide: const BorderSide(color: Colors.black, width: 0.5))),
                       ),
-                      SizedBox(height: 24),
+                      24.height,
                       TextField(
                         focusNode: _passwordNode,
                         controller: _passwordController,
@@ -263,7 +264,7 @@ class _LoginPageState extends State<LoginPage> {
                             enabledBorder: OutlineInputBorder(borderSide: const BorderSide(color: Colors.black, width: 0.5)),
                             focusedBorder: OutlineInputBorder(borderSide: const BorderSide(color: Colors.black, width: 0.5))),
                       ),
-                      SizedBox(height: 24),
+                      24.height,
                       GestureDetector(
                         onTap: () {
                           _signIn();
@@ -286,7 +287,7 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                       ),
-                      SizedBox(height: 48),
+                      48.height,
                     ],
                   ),
                 ),

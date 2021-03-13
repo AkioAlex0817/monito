@@ -145,11 +145,11 @@ class _TrackRankingSettingState extends State<TrackRankingSetting> {
         onPressed: () {
           Navigator.pop(context);
         },
-        child: Text("Cancel"),
+        child: Text("キャンセル"),
       ),
     );
     return Scaffold(
-      appBar: AppBar(centerTitle: true, backgroundColor: Constants.StatusBarColor, title: Text("Test", style: TextStyle(color: Colors.white)), actions: [
+      appBar: AppBar(centerTitle: true, backgroundColor: Constants.StatusBarColor, title: Text("指定範囲", style: TextStyle(color: Colors.white)), actions: [
         Container(
           padding: EdgeInsets.symmetric(horizontal: 5, vertical: 10),
           child: RaisedButton(
@@ -199,7 +199,7 @@ class _TrackRankingSettingState extends State<TrackRankingSetting> {
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
                                     Text(
-                                      "TrackNumber",
+                                      "指定範囲",
                                       style: TextStyle(color: Colors.black, fontSize: 15, fontWeight: FontWeight.bold),
                                     ),
                                     Text(

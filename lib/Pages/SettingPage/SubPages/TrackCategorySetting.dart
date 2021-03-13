@@ -167,7 +167,7 @@ class _TrackCategorySettingState extends State<TrackCategorySetting> {
       appBar: AppBar(
         centerTitle: true,
         backgroundColor: Constants.StatusBarColor,
-        title: Text("Test", style: TextStyle(color: Colors.white)),
+        title: Text("カテゴリ", style: TextStyle(color: Colors.white)),
         actions: [
           Container(
             padding: EdgeInsets.symmetric(horizontal: 5, vertical: 10),

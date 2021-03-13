@@ -38,7 +38,8 @@ class RankListItem extends StatelessWidget {
                 Container(
                   width: 90,
                   height: 90,
-                  decoration: BoxDecoration(border: Border.all(color: Colors.black12, width: 1, style: BorderStyle.solid), borderRadius: BorderRadius.circular(10)),
+                  decoration: BoxDecoration(border: Border.all(color: Colors.black12, width: 1, style: BorderStyle.solid), borderRadius: BorderRadius.circular(10), color: Colors.white),
+                  padding: EdgeInsets.all(3),
                   child: AspectRatio(
                     aspectRatio: 1,
                     child: Hero(
@@ -72,14 +73,20 @@ class RankListItem extends StatelessWidget {
                           ),
                         ),
                       ),
-                      Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          onLongPress: () {
-                            Helper.clipBoardWidget(rankModel.asin, context);
-                          },
-                          child: Text("ASIN: ${rankModel.asin}", style: TextStyle(color: Colors.black45, fontSize: 12, fontWeight: FontWeight.bold)),
-                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              onLongPress: () {
+                                Helper.clipBoardWidget(rankModel.asin, context);
+                              },
+                              child: Text("ASIN: ${rankModel.asin}", style: TextStyle(color: Colors.black45, fontSize: 12, fontWeight: FontWeight.bold)),
+                            ),
+                          ),
+                          Text("JAN: ${rankModel.jan}", style: TextStyle(color: Colors.black45, fontSize: 12, fontWeight: FontWeight.bold)),
+                        ],
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,

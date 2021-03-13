@@ -50,7 +50,7 @@ class _SettingPageState extends State<SettingPage> {
                       )
                     : Container(),
                 SettingListItem(
-                  menuTitle: "Track Category",
+                  menuTitle: "カテゴリ",
                   onPressed: () {
                     Navigator.push(
                         context,
@@ -66,7 +66,7 @@ class _SettingPageState extends State<SettingPage> {
                   },
                 ),
                 SettingListItem(
-                  menuTitle: "Track Ranking",
+                  menuTitle: "指定範囲",
                   onPressed: () {
                     Navigator.push(
                         context,
@@ -83,7 +83,7 @@ class _SettingPageState extends State<SettingPage> {
                 ),
                 isLogin
                     ? SettingListItem(
-                        menuTitle: "Track Achieve Percent",
+                        menuTitle: "上昇率",
                         onPressed: () {
                           Navigator.push(
                               context,
@@ -101,7 +101,7 @@ class _SettingPageState extends State<SettingPage> {
                     : Container(),
                 isLogin
                     ? SettingListItem(
-                        menuTitle: "Setting Suppliers",
+                        menuTitle: "仕入れ先リスト",
                         onPressed: () {
                           Navigator.push(
                               context,

@@ -80,11 +80,11 @@ class _TrackAchievePercentSettingState extends State<TrackAchievePercentSetting>
     if (_isLoading) return;
     String percent = percentController.text.trim();
     if (percent.isEmpty) {
-      Helper.showToast("Please insert percent", false);
+      Helper.showToast("上昇率を入力してください。", false);
       return;
     }
     if (int.parse(percent) > 100) {
-      Helper.showToast("Percent must be less than 100", false);
+      Helper.showToast("上昇率は100%以下の値を入力してください。", false);
       return;
     }
     FocusScope.of(context).requestFocus(FocusNode());
@@ -127,7 +127,7 @@ class _TrackAchievePercentSettingState extends State<TrackAchievePercentSetting>
       appBar: AppBar(
         centerTitle: true,
         backgroundColor: Constants.StatusBarColor,
-        title: Text("Keepa設定", style: TextStyle(color: Colors.white)),
+        title: Text("上昇率設定", style: TextStyle(color: Colors.white)),
         actions: [
           Container(
             padding: EdgeInsets.symmetric(horizontal: 5, vertical: 10),
@@ -170,7 +170,7 @@ class _TrackAchievePercentSettingState extends State<TrackAchievePercentSetting>
                             child: ListTile(
                               tileColor: Colors.white,
                               leading: Text(
-                                "Achieve Percent(%)",
+                                "上昇率(%)",
                                 style: TextStyle(color: Colors.black, fontSize: 15, fontWeight: FontWeight.bold),
                               ),
                               title: TextFormField(

@@ -135,7 +135,7 @@ class _FavoriteDetailPageState extends State<FavoriteDetailPage> {
                                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                               children: [
                                                 Text(
-                                                  "",
+                                                  "JAN: ${widget.favoriteModel.jan}",
                                                   style: TextStyle(color: Colors.black54, fontSize: 12, fontWeight: FontWeight.bold),
                                                 ),
                                                 Text(
@@ -163,7 +163,7 @@ class _FavoriteDetailPageState extends State<FavoriteDetailPage> {
                               Expanded(
                                 flex: 2,
                                 child: LabelWidget(
-                                  color: Color.fromARGB(255, 0, 154, 191),
+                                  color: Constants.ButtonColor,
                                   label: "ランキング",
                                   fontSize: 14,
                                 ),
@@ -173,7 +173,7 @@ class _FavoriteDetailPageState extends State<FavoriteDetailPage> {
                                 child: Container(
                                   alignment: Alignment.centerRight,
                                   child: Text(
-                                    sprintf("%s位 → %s位", [currency.format(widget.favoriteModel.last_sales_rank), currency.format(widget.favoriteModel.sales_rank)]),
+                                    sprintf("%s位 → %s位", [widget.favoriteModel.last_sales_rank.formatter, widget.favoriteModel.sales_rank.formatter]),
                                     style: TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.bold),
                                   ),
                                 ),
@@ -189,7 +189,7 @@ class _FavoriteDetailPageState extends State<FavoriteDetailPage> {
                               Expanded(
                                 flex: 2,
                                 child: LabelWidget(
-                                  color: Color.fromARGB(255, 0, 154, 191),
+                                  color: Constants.ButtonColor,
                                   label: "新品価格",
                                   fontSize: 14,
                                 ),
@@ -199,7 +199,18 @@ class _FavoriteDetailPageState extends State<FavoriteDetailPage> {
                                 child: Container(
                                   alignment: Alignment.centerRight,
                                   child: Text(
-                                    sprintf("%s円", [currency.format(widget.favoriteModel.cart_price == -1 ? widget.favoriteModel.new_price : widget.favoriteModel.cart_price)]),
+                                    sprintf(
+                                      "%s円 → %s円",
+                                      widget.favoriteModel.cart_price == -1
+                                          ? [
+                                              widget.favoriteModel.last_new_price.formatter,
+                                              widget.favoriteModel.new_price.formatter,
+                                            ]
+                                          : [
+                                              widget.favoriteModel.last_cart_price.formatter,
+                                              widget.favoriteModel.cart_price.formatter,
+                                            ],
+                                    ),
                                     style: TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.bold),
                                   ),
                                 ),
@@ -215,7 +226,7 @@ class _FavoriteDetailPageState extends State<FavoriteDetailPage> {
                               Expanded(
                                 flex: 2,
                                 child: LabelWidget(
-                                  color: Color.fromARGB(255, 0, 154, 191),
+                                  color: Constants.ButtonColor,
                                   label: "新品出品者数",
                                   fontSize: 14,
                                 ),
@@ -225,7 +236,7 @@ class _FavoriteDetailPageState extends State<FavoriteDetailPage> {
                                 child: Container(
                                   alignment: Alignment.centerRight,
                                   child: Text(
-                                    sprintf("%s人", [currency.format(widget.favoriteModel.offers)]),
+                                    sprintf("%s人", [widget.favoriteModel.offers.formatter]),
                                     style: TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.bold),
                                   ),
                                 ),
@@ -313,7 +324,7 @@ class _FavoriteDetailPageState extends State<FavoriteDetailPage> {
                                     context: context,
                                     builder: (context) {
                                       return CupertinoAlertDialog(
-                                        title: Text("Are you sure delete it?"),
+                                        title: Text("削除してもよろしいでしょうか？"),
                                         actions: [
                                           CupertinoDialogAction(
                                             isDefaultAction: true,
@@ -349,7 +360,18 @@ class _FavoriteDetailPageState extends State<FavoriteDetailPage> {
                               loadingColor: Colors.black,
                               loadingSize: 20,
                               borderRadius: 10,
-                              onPressed: () {},
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    PageTransition(
+                                        child: WebPage(
+                                          url: Constants.AmazonURL + widget.favoriteModel.asin,
+                                        ),
+                                        type: PageTransitionType.bottomToTop,
+                                        inheritTheme: true,
+                                        curve: Curves.easeIn,
+                                        ctx: context));
+                              },
                             ),
                           )
                         ],

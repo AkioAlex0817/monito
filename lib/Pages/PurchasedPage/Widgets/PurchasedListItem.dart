@@ -39,7 +39,8 @@ class PurchasedListItem extends StatelessWidget {
                 Container(
                   width: 90,
                   height: 90,
-                  decoration: BoxDecoration(border: Border.all(color: Colors.black12, width: 1, style: BorderStyle.solid), borderRadius: BorderRadius.circular(10)),
+                  decoration: BoxDecoration(border: Border.all(color: Colors.black12, width: 1, style: BorderStyle.solid), borderRadius: BorderRadius.circular(10), color: Colors.white),
+                  padding: EdgeInsets.all(3),
                   child: AspectRatio(
                     aspectRatio: 1,
                     child: Hero(
@@ -73,14 +74,20 @@ class PurchasedListItem extends StatelessWidget {
                           ),
                         ),
                       ),
-                      Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          onLongPress: () {
-                            Helper.clipBoardWidget(purchasedModel.asin, context);
-                          },
-                          child: Text("ASIN: ${purchasedModel.asin}", style: TextStyle(color: Colors.black45, fontSize: 12, fontWeight: FontWeight.bold)),
-                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              onLongPress: () {
+                                Helper.clipBoardWidget(purchasedModel.asin, context);
+                              },
+                              child: Text("ASIN: ${purchasedModel.asin}", style: TextStyle(color: Colors.black45, fontSize: 12, fontWeight: FontWeight.bold)),
+                            ),
+                          ),
+                          Text("JAN: ${purchasedModel.jan}", style: TextStyle(color: Colors.black45, fontSize: 12, fontWeight: FontWeight.bold)),
+                        ],
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -90,7 +97,7 @@ class PurchasedListItem extends StatelessWidget {
                             style: TextStyle(color: Colors.red, fontSize: 12, fontWeight: FontWeight.bold),
                           ),
                           Text(
-                            purchasedModel.category_name,
+                            sprintf("%s円", [purchasedModel.cart_price == -1 ? purchasedModel.new_price.formatter : purchasedModel.cart_price.formatter]),
                             style: TextStyle(color: Colors.red, fontSize: 12, fontWeight: FontWeight.bold),
                           )
                         ],

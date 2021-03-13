@@ -2,6 +2,7 @@ class AchieveWishListModel {
   int id;
   int user_id;
   String asin;
+  String jan;
   int last_sales_rank;
   int last_used_price;
   int last_new_price;
@@ -14,13 +15,14 @@ class AchieveWishListModel {
   String updated_at;
   String last_achieve_checked_at;
 
-  AchieveWishListModel(
-      this.id, this.user_id, this.asin, this.last_sales_rank, this.last_used_price, this.last_new_price, this.last_amazon_price, this.last_cart_price, this.price_achieved_at, this.last_has_amazon_offer, this.amazon_outstock_at, this.created_at, this.updated_at, this.last_achieve_checked_at);
+  AchieveWishListModel(this.id, this.user_id, this.asin, this.jan, this.last_sales_rank, this.last_used_price, this.last_new_price, this.last_amazon_price, this.last_cart_price, this.price_achieved_at, this.last_has_amazon_offer, this.amazon_outstock_at, this.created_at, this.updated_at,
+      this.last_achieve_checked_at);
 
   AchieveWishListModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     user_id = json['user_id'];
     asin = json['asin'];
+    jan = json['jan'];
     last_sales_rank = json['last_sales_rank'];
     last_used_price = json['last_used_price'];
     last_new_price = json['last_new_price'];

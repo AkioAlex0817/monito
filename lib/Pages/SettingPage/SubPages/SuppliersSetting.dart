@@ -111,7 +111,7 @@ class _SuppliersSettingState extends State<SuppliersSetting> {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
-        title: Text("Supplier Setting"),
+        title: Text("仕入れ先リスト"),
         backgroundColor: Constants.StatusBarColor,
         actions: [
           _isInit && suppliers.length <= 10
@@ -142,7 +142,7 @@ class _SuppliersSettingState extends State<SuppliersSetting> {
                           child: Container(
                             alignment: Alignment.center,
                             child: Text(
-                              "該当データがありません。\n Click `+` button to add",
+                              "仕入れ先を追加",
                               style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold),
                             ),
                           ),
@@ -170,7 +170,7 @@ class _SuppliersSettingState extends State<SuppliersSetting> {
                                             context: context,
                                             builder: (context) {
                                               return CupertinoAlertDialog(
-                                                title: Text("Are you sure delete it?"),
+                                                title: Text("仕入れ先情報を削除してもよろしいでしょうか？"),
                                                 actions: [
                                                   CupertinoDialogAction(
                                                     isDefaultAction: true,

@@ -32,6 +32,7 @@ class _PurchasedPageState extends State<PurchasedPage> {
   bool _isInit = false;
   List<PurchasedModel> purchasedList = [];
   List<Map<String, dynamic>> categories = [];
+  List<Map<String, dynamic>> suppliers = [];
 
   @override
   void initState() {
@@ -46,6 +47,8 @@ class _PurchasedPageState extends State<PurchasedPage> {
 
   _init() async {
     categories = await _databaseProvider.getAllCategories();
+    suppliers = await _databaseProvider.getAllSuppliers();
+    print(suppliers);
     _getPurchasedList();
   }
 
@@ -69,6 +72,7 @@ class _PurchasedPageState extends State<PurchasedPage> {
               _hasNextPage = _currentPage <= result['data']['last_page'];
               for (var item in result['data']['data']) {
                 item['category_name'] = categories.firstWhere((element) => element['cat_id'] == item['cat_id'].toString())['name'];
+                item['supplier_name'] = suppliers.firstWhere((element) => element['id'] == item['supplier'])['name'];
                 lists.add(PurchasedModel.fromJson(item));
               }
               if (!_isInit) {
@@ -128,6 +132,7 @@ class _PurchasedPageState extends State<PurchasedPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         centerTitle: true,
         backgroundColor: Constants.StatusBarColor,
@@ -178,7 +183,7 @@ class _PurchasedPageState extends State<PurchasedPage> {
                                           inheritTheme: true,
                                           curve: Curves.easeIn,
                                           ctx: context,
-                                        )).then((value){
+                                        )).then((value) {
                                       if (value == "Remove") {
                                         _removePurchased(index);
                                       }
@@ -191,7 +196,7 @@ class _PurchasedPageState extends State<PurchasedPage> {
                                       context: context,
                                       builder: (context) {
                                         return CupertinoAlertDialog(
-                                          title: Text("Are you sure delete it?"),
+                                          title: Text("削除してもよろしいでしょうか？"),
                                           actions: [
                                             CupertinoDialogAction(
                                               isDefaultAction: true,

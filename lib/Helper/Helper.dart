@@ -72,6 +72,7 @@ class Helper {
   }
 
   static String imageURL(String filename) {
+    if(filename == null) return null;
     List<String> params = filename.split(".");
     return Constants.ImageURL + params[0] + ".SL160." + params[1];
   }
@@ -89,7 +90,7 @@ class Helper {
     return false;
   }
 
-  static String formatDate(DateTime date, String format){
+  static String formatDate(DateTime date, String format) {
     return DateFormat(format).format(date);
   }
 }

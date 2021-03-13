@@ -212,7 +212,7 @@ class _RankDetailPageState extends State<RankDetailPage> {
                                                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                                 children: [
                                                   Text(
-                                                    "",
+                                                    "JAN: ${widget.rankModel.jan}",
                                                     style: TextStyle(color: Colors.black54, fontSize: 12, fontWeight: FontWeight.bold),
                                                   ),
                                                   Text(
@@ -240,7 +240,7 @@ class _RankDetailPageState extends State<RankDetailPage> {
                                 Expanded(
                                   flex: 2,
                                   child: LabelWidget(
-                                    color: Color.fromARGB(255, 0, 154, 191),
+                                    color: Constants.ButtonColor,
                                     label: "ランキング",
                                     fontSize: 14,
                                   ),
@@ -250,7 +250,7 @@ class _RankDetailPageState extends State<RankDetailPage> {
                                   child: Container(
                                     alignment: Alignment.centerRight,
                                     child: Text(
-                                      sprintf("%s位 → %s位", [currency.format(widget.rankModel.last_sales_rank), currency.format(widget.rankModel.sales_rank)]),
+                                      sprintf("%s位 → %s位", [widget.rankModel.last_sales_rank.formatter, widget.rankModel.sales_rank.formatter]),
                                       style: TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.bold),
                                     ),
                                   ),
@@ -266,7 +266,7 @@ class _RankDetailPageState extends State<RankDetailPage> {
                                 Expanded(
                                   flex: 2,
                                   child: LabelWidget(
-                                    color: Color.fromARGB(255, 0, 154, 191),
+                                    color: Constants.ButtonColor,
                                     label: "新品価格",
                                     fontSize: 14,
                                   ),
@@ -276,7 +276,7 @@ class _RankDetailPageState extends State<RankDetailPage> {
                                   child: Container(
                                     alignment: Alignment.centerRight,
                                     child: Text(
-                                      sprintf("%s円", [currency.format(widget.rankModel.cart_price == -1 ? widget.rankModel.new_price : widget.rankModel.cart_price)]),
+                                      sprintf("%s円", [widget.rankModel.cart_price == -1 ? widget.rankModel.new_price.formatter : widget.rankModel.cart_price.formatter]),
                                       style: TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.bold),
                                     ),
                                   ),
@@ -292,7 +292,7 @@ class _RankDetailPageState extends State<RankDetailPage> {
                                 Expanded(
                                   flex: 2,
                                   child: LabelWidget(
-                                    color: Color.fromARGB(255, 0, 154, 191),
+                                    color: Constants.ButtonColor,
                                     label: "新品出品者数",
                                     fontSize: 14,
                                   ),
@@ -302,7 +302,7 @@ class _RankDetailPageState extends State<RankDetailPage> {
                                   child: Container(
                                     alignment: Alignment.centerRight,
                                     child: Text(
-                                      sprintf("%s人", [currency.format(widget.rankModel.offers)]),
+                                      sprintf("%s人", [widget.rankModel.offers.formatter]),
                                       style: TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.bold),
                                     ),
                                   ),
@@ -407,7 +407,18 @@ class _RankDetailPageState extends State<RankDetailPage> {
                                 loadingColor: Colors.black,
                                 loadingSize: 20,
                                 borderRadius: 10,
-                                onPressed: () {},
+                                onPressed: () {
+                                  Navigator.push(
+                                      context,
+                                      PageTransition(
+                                          child: WebPage(
+                                            url: Constants.AmazonURL + widget.rankModel.asin,
+                                          ),
+                                          type: PageTransitionType.bottomToTop,
+                                          inheritTheme: true,
+                                          curve: Curves.easeIn,
+                                          ctx: context));
+                                },
                               ),
                             )
                           ],

@@ -3,6 +3,13 @@ import 'AchieveWishListModel.dart';
 class AchieveModel {
   int id;
   String asin;
+  String jan;
+  int last_cart_price;
+  int last_amazon_price;
+  int last_new_price;
+  int last_used_price;
+  int last_sales_rank;
+  int last_has_amazon_offer;
   int wishlist_id;
   int type; //1: 価格上昇 , 2: Amazon切れ
   String created_at;
@@ -24,12 +31,20 @@ class AchieveModel {
   bool isAddPurchasedList;
   String category_name;
 
-  AchieveModel(this.id, this.asin, this.wishlist_id, this.type, this.created_at, this.updated_at, this.achieveWishListModel, this.cat_id, this.title, this.photo, this.amazon_price, this.new_price, this.used_price, this.cart_price, this.offers, this.new_offers, this.used_offers,
-      this.has_amazon_offer, this.sales_rank, this.last_update, this.isAddPurchasedList, this.category_name);
+
+  AchieveModel(this.id, this.asin, this.jan, this.last_cart_price, this.last_amazon_price, this.last_new_price, this.last_used_price, this.last_sales_rank, this.last_has_amazon_offer, this.wishlist_id, this.type, this.created_at, this.updated_at, this.achieveWishListModel, this.cat_id, this.title,
+      this.photo, this.amazon_price, this.new_price, this.used_price, this.cart_price, this.offers, this.new_offers, this.used_offers, this.has_amazon_offer, this.sales_rank, this.last_update, this.isAddPurchasedList, this.category_name);
 
   AchieveModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     asin = json['asin'];
+    jan = json['jan'];
+    last_cart_price = json['last_cart_price'];
+    last_amazon_price = json['last_amazon_price'];
+    last_new_price = json['last_new_price'];
+    last_used_price = json['last_used_price'];
+    last_sales_rank = json['last_sales_rank'];
+    last_has_amazon_offer = json['last_has_amazon_offer'];
     wishlist_id = json['wishlist_id'];
     type = json['type']; //1: 価格上昇 , 2: Amazon切れ
     created_at = json['created_at'];

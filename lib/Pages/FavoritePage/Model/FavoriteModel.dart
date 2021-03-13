@@ -24,9 +24,10 @@ class FavoriteModel {
   String last_update;
   String created_at;
   String category_name;
+  String jan;
 
   FavoriteModel(this.asin, this.last_sales_rank, this.last_used_price, this.last_new_price, this.last_amazon_price, this.last_cart_price, this.price_achieved_at, this.last_has_amazon_offer, this.amazon_outstock_at, this.last_achieve_checked_at, this.cat_id, this.title, this.photo, this.amazon_price,
-      this.new_price, this.used_price, this.cart_price, this.offers, this.new_offers, this.used_offers, this.has_amazon_offer, this.sales_rank, this.last_update, this.created_at, this.category_name);
+      this.new_price, this.used_price, this.cart_price, this.offers, this.new_offers, this.used_offers, this.has_amazon_offer, this.sales_rank, this.last_update, this.created_at, this.category_name, this.jan);
 
   FavoriteModel.fromJson(Map<String, dynamic> json) {
     asin = json['asin'];
@@ -54,5 +55,6 @@ class FavoriteModel {
     last_update = json['last_update'];
     created_at = json['created_at'];
     category_name = json['category_name'];
+    jan = json['jan'];
   }
 }

@@ -11,10 +11,12 @@ import 'package:monito/Helper/HttpHelper.dart';
 import 'package:monito/Helper/LangHelper.dart';
 import 'package:monito/Pages/PurchasingPage/Model/PurchasingModel.dart';
 import 'package:monito/Pages/SettingPage/Model/SupplierModel.dart';
+import 'package:monito/Pages/WebPages/WebPage.dart';
 import 'package:monito/Widgets/LabelWidget.dart';
 import 'package:monito/Widgets/LoadingButton.dart';
 import 'package:monito/Widgets/ZoomOverlayWidget.dart';
 import 'package:monito/Helper/IntExtensions.dart';
+import 'package:page_transition/page_transition.dart';
 
 import 'Formatter/CurrencyInputFormatter.dart';
 
@@ -63,9 +65,7 @@ class _PublishPageState extends State<PublishPage> {
       suppliers.add(SupplierModel.fromJson(item));
     }
     buyPriceController.text = "0";
-    setState(() {
-
-    });
+    setState(() {});
   }
 
   @override
@@ -79,11 +79,11 @@ class _PublishPageState extends State<PublishPage> {
     if (_isLoading) return;
     String price = buyPriceController.text.trim().replaceAll(",", "");
     if (Helper.isNullOrEmpty(price) || int.parse(price) == 0) {
-      Helper.showToast("Please insert price", false);
+      Helper.showToast("仕入れ価格を入力してください。", false);
       return;
     }
     if (currentSupplier == 0) {
-      Helper.showToast("Please Select Supplier", false);
+      Helper.showToast("仕入れ先を選択してください。", false);
       return;
     }
 
@@ -219,7 +219,7 @@ class _PublishPageState extends State<PublishPage> {
                                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                               children: [
                                                 Text(
-                                                  "",
+                                                  "JAN: ${widget.purchasingModel.jan}",
                                                   style: TextStyle(color: Colors.black54, fontSize: 12, fontWeight: FontWeight.bold),
                                                 ),
                                                 Text(
@@ -247,7 +247,7 @@ class _PublishPageState extends State<PublishPage> {
                               Expanded(
                                 flex: 2,
                                 child: LabelWidget(
-                                  color: Color.fromARGB(255, 0, 154, 191),
+                                  color: Constants.ButtonColor,
                                   label: "仕入れ価格",
                                   fontSize: 14,
                                 ),
@@ -284,7 +284,7 @@ class _PublishPageState extends State<PublishPage> {
                               Expanded(
                                 flex: 2,
                                 child: LabelWidget(
-                                  color: Color.fromARGB(255, 0, 154, 191),
+                                  color: Constants.ButtonColor,
                                   label: "仕入れ先",
                                   fontSize: 14,
                                 ),
@@ -365,7 +365,18 @@ class _PublishPageState extends State<PublishPage> {
                               loadingColor: Colors.black,
                               loadingSize: 20,
                               borderRadius: 10,
-                              onPressed: () {},
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    PageTransition(
+                                        child: WebPage(
+                                          url: "https://sellercentral.amazon.co.jp/product-search/search?q=${widget.purchasingModel.asin}&ref_=xx_addlisting_dnav_home",
+                                        ),
+                                        type: PageTransitionType.bottomToTop,
+                                        inheritTheme: true,
+                                        curve: Curves.easeIn,
+                                        ctx: context));
+                              },
                             ),
                           ),
                           20.width,
@@ -399,7 +410,18 @@ class _PublishPageState extends State<PublishPage> {
                               loadingColor: Colors.black,
                               loadingSize: 20,
                               borderRadius: 10,
-                              onPressed: () {},
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    PageTransition(
+                                        child: WebPage(
+                                          url: Constants.AmazonURL + widget.purchasingModel.asin,
+                                        ),
+                                        type: PageTransitionType.bottomToTop,
+                                        inheritTheme: true,
+                                        curve: Curves.easeIn,
+                                        ctx: context));
+                              },
                             ),
                           )
                         ],

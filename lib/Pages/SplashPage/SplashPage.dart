@@ -102,7 +102,7 @@ class _SplashPageState extends State<SplashPage> {
 
   _initDB() async {
     setState(() {
-      landingDescription = "Initializing Database";
+      landingDescription = "初期化中です。。。";
     });
     await DatabaseProvider.db.createDatabase();
     //Refresh Category List
@@ -133,7 +133,7 @@ class _SplashPageState extends State<SplashPage> {
       //sync suppliers name
       String supplierUrl = Constants.URL + "api/setting/suppliers";
       var supplierResponse = await HttpHelper.authGet(context, null, supplierUrl, {});
-      if (mounted && supplierUrl != null) {
+      if (mounted && supplierResponse != null) {
         var supplierResult = json.decode(supplierResponse.body);
         if (supplierResult['result'] == "success") {
           for (var item in supplierResult['data']) {
@@ -143,7 +143,7 @@ class _SplashPageState extends State<SplashPage> {
       }
       //update user info
       setState(() {
-        landingDescription = "User info initializing";
+        landingDescription = "ユーザ情報取り込み中。。。";
       });
 
       String url = Constants.URL + "api/me";
@@ -170,7 +170,7 @@ class _SplashPageState extends State<SplashPage> {
         }
         //update user setting
         setState(() {
-          landingDescription = "User setting initializing";
+          landingDescription = "設定初期化中。。。";
         });
         String settingURL = Constants.URL + "api/setting";
         var settingResponse = await HttpHelper.authGet(context, null, settingURL, {});

@@ -10,7 +10,6 @@ import 'package:monito/Widgets/LabelWidget.dart';
 import 'package:monito/Widgets/LoadingButton.dart';
 import 'package:monito/Widgets/ZoomOverlayWidget.dart';
 import 'package:monito/Helper/IntExtensions.dart';
-import 'package:monito/main.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:sprintf/sprintf.dart';
 
@@ -135,7 +134,7 @@ class _PurchasedDetailPageState extends State<PurchasedDetailPage> {
                                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                               children: [
                                                 Text(
-                                                  "",
+                                                  "JAN: ${widget.purchasedModel.jan}",
                                                   style: TextStyle(color: Colors.black54, fontSize: 12, fontWeight: FontWeight.bold),
                                                 ),
                                                 Text(
@@ -163,7 +162,7 @@ class _PurchasedDetailPageState extends State<PurchasedDetailPage> {
                               Expanded(
                                 flex: 2,
                                 child: LabelWidget(
-                                  color: Color.fromARGB(255, 0, 154, 191),
+                                  color: Constants.ButtonColor,
                                   label: "ランキング",
                                   fontSize: 14,
                                 ),
@@ -173,7 +172,7 @@ class _PurchasedDetailPageState extends State<PurchasedDetailPage> {
                                 child: Container(
                                   alignment: Alignment.centerRight,
                                   child: Text(
-                                    sprintf("%s位", [currency.format(widget.purchasedModel.sales_rank)]),
+                                    sprintf("%s位", [widget.purchasedModel.sales_rank.formatter]),
                                     style: TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.bold),
                                   ),
                                 ),
@@ -189,8 +188,8 @@ class _PurchasedDetailPageState extends State<PurchasedDetailPage> {
                               Expanded(
                                 flex: 2,
                                 child: LabelWidget(
-                                  color: Color.fromARGB(255, 0, 154, 191),
-                                  label: "新品価格",
+                                  color: Constants.ButtonColor,
+                                  label: "仕入れ価格",
                                   fontSize: 14,
                                 ),
                               ),
@@ -199,7 +198,7 @@ class _PurchasedDetailPageState extends State<PurchasedDetailPage> {
                                 child: Container(
                                   alignment: Alignment.centerRight,
                                   child: Text(
-                                    sprintf("%s円", [currency.format(widget.purchasedModel.cart_price == -1 ? widget.purchasedModel.new_price : widget.purchasedModel.cart_price)]),
+                                    sprintf("%s円 (%s)", [widget.purchasedModel.cost_price.formatter, widget.purchasedModel.supplier_name]),
                                     style: TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.bold),
                                   ),
                                 ),
@@ -215,7 +214,7 @@ class _PurchasedDetailPageState extends State<PurchasedDetailPage> {
                               Expanded(
                                 flex: 2,
                                 child: LabelWidget(
-                                  color: Color.fromARGB(255, 0, 154, 191),
+                                  color: Constants.ButtonColor,
                                   label: "新品出品者数",
                                   fontSize: 14,
                                 ),
@@ -225,7 +224,7 @@ class _PurchasedDetailPageState extends State<PurchasedDetailPage> {
                                 child: Container(
                                   alignment: Alignment.centerRight,
                                   child: Text(
-                                    sprintf("%s人", [currency.format(widget.purchasedModel.offers)]),
+                                    sprintf("%s人", [widget.purchasedModel.offers.formatter]),
                                     style: TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.bold),
                                   ),
                                 ),

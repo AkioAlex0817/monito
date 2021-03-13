@@ -192,7 +192,7 @@ class _FavoritePageState extends State<FavoritePage> {
                                         context: context,
                                         builder: (context) {
                                           return CupertinoAlertDialog(
-                                            title: Text("Are you sure delete it?"),
+                                            title: Text("削除してもよろしいでしょうか？"),
                                             actions: [
                                               CupertinoDialogAction(
                                                 isDefaultAction: true,

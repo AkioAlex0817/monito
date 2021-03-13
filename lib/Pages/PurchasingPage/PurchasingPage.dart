@@ -180,7 +180,7 @@ class _PurchasingPageState extends State<PurchasingPage> {
                                         context: context,
                                         builder: (context) {
                                           return CupertinoAlertDialog(
-                                            title: Text("Are you sure delete it?"),
+                                            title: Text("削除してもよろしいでしょうか？"),
                                             actions: [
                                               CupertinoDialogAction(
                                                 isDefaultAction: true,

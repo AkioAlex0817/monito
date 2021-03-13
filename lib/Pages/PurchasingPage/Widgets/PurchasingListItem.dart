@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:monito/Helper/Helper.dart';
 import 'package:monito/Pages/PurchasingPage/Model/PurchasingModel.dart';
 import 'package:monito/Helper/IntExtensions.dart';
-import 'package:monito/main.dart';
 import 'package:sprintf/sprintf.dart';
 
 class PurchasingListItem extends StatelessWidget {
@@ -38,7 +37,8 @@ class PurchasingListItem extends StatelessWidget {
                 Container(
                   width: 90,
                   height: 90,
-                  decoration: BoxDecoration(border: Border.all(color: Colors.black12, width: 1, style: BorderStyle.solid), borderRadius: BorderRadius.circular(10)),
+                  decoration: BoxDecoration(border: Border.all(color: Colors.black12, width: 1, style: BorderStyle.solid), borderRadius: BorderRadius.circular(10), color: Colors.white),
+                  padding: EdgeInsets.all(3),
                   child: AspectRatio(
                     aspectRatio: 1,
                     child: Hero(
@@ -72,24 +72,30 @@ class PurchasingListItem extends StatelessWidget {
                           ),
                         ),
                       ),
-                      Material(
-                        color: Colors.transparent,
-                        child: InkWell(
-                          onLongPress: () {
-                            Helper.clipBoardWidget(purchasingModel.asin, context);
-                          },
-                          child: Text("ASIN: ${purchasingModel.asin}", style: TextStyle(color: Colors.black45, fontSize: 12, fontWeight: FontWeight.bold)),
-                        ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Material(
+                            color: Colors.transparent,
+                            child: InkWell(
+                              onLongPress: () {
+                                Helper.clipBoardWidget(purchasingModel.asin, context);
+                              },
+                              child: Text("ASIN: ${purchasingModel.asin}", style: TextStyle(color: Colors.black45, fontSize: 12, fontWeight: FontWeight.bold)),
+                            ),
+                          ),
+                          Text("JAN: ${purchasingModel.jan}", style: TextStyle(color: Colors.black45, fontSize: 12, fontWeight: FontWeight.bold)),
+                        ],
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            sprintf("%s位", [currency.format(purchasingModel.sales_rank)]),
+                            sprintf("%s位", [purchasingModel.sales_rank.formatter]),
                             style: TextStyle(color: Colors.red, fontSize: 12, fontWeight: FontWeight.bold),
                           ),
                           Text(
-                            purchasingModel.category_name,
+                            sprintf("%s円", [purchasingModel.cart_price == -1 ? purchasingModel.new_price.formatter : purchasingModel.cart_price.formatter]),
                             style: TextStyle(color: Colors.red, fontSize: 12, fontWeight: FontWeight.bold),
                           )
                         ],

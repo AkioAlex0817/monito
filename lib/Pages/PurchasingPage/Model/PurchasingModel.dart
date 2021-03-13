@@ -1,6 +1,13 @@
 class PurchasingModel {
   int id;
   String asin;
+  String jan;
+  int last_cart_price;
+  int last_amazon_price;
+  int last_new_price;
+  int last_used_price;
+  int last_sales_rank;
+  int last_has_amazon_offer;
   String created_at;
   String updated_at;
   String cat_id;
@@ -18,12 +25,19 @@ class PurchasingModel {
   String last_update;
   String category_name;
 
-  PurchasingModel(
-      this.id, this.asin, this.created_at, this.updated_at, this.cat_id, this.title, this.photo, this.amazon_price, this.new_price, this.used_price, this.cart_price, this.offers, this.new_offers, this.used_offers, this.has_amazon_offer, this.sales_rank, this.last_update, this.category_name);
+  PurchasingModel(this.id, this.asin, this.jan, this.last_cart_price, this.last_amazon_price, this.last_new_price, this.last_used_price, this.last_sales_rank, this.last_has_amazon_offer, this.created_at, this.updated_at, this.cat_id, this.title, this.photo, this.amazon_price, this.new_price,
+      this.used_price, this.cart_price, this.offers, this.new_offers, this.used_offers, this.has_amazon_offer, this.sales_rank, this.last_update, this.category_name);
 
   PurchasingModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     asin = json['asin'];
+    jan = json['jan'];
+    last_cart_price = json['last_cart_price'];
+    last_amazon_price = json['last_amazon_price'];
+    last_new_price = json['last_new_price'];
+    last_used_price = json['last_used_price'];
+    last_sales_rank = json['last_sales_rank'];
+    last_has_amazon_offer = json['last_has_amazon_offer'];
     created_at = json['created_at'];
     updated_at = json['updated_at'];
     cat_id = json['cat_id'].toString();

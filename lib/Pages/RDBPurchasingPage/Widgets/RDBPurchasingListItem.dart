@@ -2,16 +2,15 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:monito/Helper/Helper.dart';
-import 'package:monito/Pages/FavoritePage/Model/FavoriteModel.dart';
+import 'package:monito/Pages/RDBPurchasingPage/Model/RDBPurchasingModel.dart';
 import 'package:monito/Helper/IntExtensions.dart';
-import 'package:monito/main.dart';
 import 'package:sprintf/sprintf.dart';
 
-class FavoriteListItem extends StatelessWidget {
-  final FavoriteModel favoriteModel;
+class RDBPurchasingListItem extends StatelessWidget {
+  final RDBPurchasingModel rdbPurchasingModel;
   final VoidCallback onPressed;
 
-  FavoriteListItem({@required this.favoriteModel, @required this.onPressed});
+  RDBPurchasingListItem({@required this.rdbPurchasingModel, @required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -38,16 +37,15 @@ class FavoriteListItem extends StatelessWidget {
                 Container(
                   width: 90,
                   height: 90,
-                  decoration: BoxDecoration(border: Border.all(color: Colors.black12, width: 1, style: BorderStyle.solid), borderRadius: BorderRadius.circular(10), color: Colors.white),
-                  padding: EdgeInsets.all(3),
+                  decoration: BoxDecoration(border: Border.all(color: Colors.black12, width: 1, style: BorderStyle.solid), borderRadius: BorderRadius.circular(10)),
                   child: AspectRatio(
                     aspectRatio: 1,
                     child: Hero(
-                      tag: 'favorite_image_' + favoriteModel.asin,
+                      tag: 'rdb_purchasing_image_' + rdbPurchasingModel.asin,
                       child: CachedNetworkImage(
                         placeholder: (context, url) => CupertinoActivityIndicator(radius: 10),
                         errorWidget: (context, url, error) => Icon(Icons.error, color: Colors.red),
-                        imageUrl: Helper.imageURL(favoriteModel.photo),
+                        imageUrl: Helper.imageURL(rdbPurchasingModel.photo),
                       ),
                     ),
                   ),
@@ -58,13 +56,13 @@ class FavoriteListItem extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Hero(
-                        tag: "favorite_title_" + favoriteModel.asin,
+                        tag: "rdb_purchasing_title_" + rdbPurchasingModel.asin,
                         child: Container(
                           alignment: Alignment.centerLeft,
                           child: Material(
                             type: MaterialType.transparency,
                             child: Text(
-                              favoriteModel.title,
+                              rdbPurchasingModel.title,
                               style: TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.bold),
                               maxLines: 2,
                               softWrap: true,
@@ -80,23 +78,23 @@ class FavoriteListItem extends StatelessWidget {
                             color: Colors.transparent,
                             child: InkWell(
                               onLongPress: () {
-                                Helper.clipBoardWidget(favoriteModel.asin, context);
+                                Helper.clipBoardWidget(rdbPurchasingModel.asin, context);
                               },
-                              child: Text("ASIN: ${favoriteModel.asin}", style: TextStyle(color: Colors.black45, fontSize: 12, fontWeight: FontWeight.bold)),
+                              child: Text("ASIN: ${rdbPurchasingModel.asin}", style: TextStyle(color: Colors.black45, fontSize: 12, fontWeight: FontWeight.bold)),
                             ),
                           ),
-                          Text("JAN: ${favoriteModel.jan}", style: TextStyle(color: Colors.black45, fontSize: 12, fontWeight: FontWeight.bold)),
+                          Text("JAN: ${rdbPurchasingModel.jan}", style: TextStyle(color: Colors.black45, fontSize: 12, fontWeight: FontWeight.bold)),
                         ],
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            sprintf("%s位", [currency.format(favoriteModel.sales_rank)]),
+                            sprintf("%s位", [rdbPurchasingModel.sales_rank.formatter]),
                             style: TextStyle(color: Colors.red, fontSize: 12, fontWeight: FontWeight.bold),
                           ),
                           Text(
-                            favoriteModel.category_name,
+                            sprintf("%s円", [rdbPurchasingModel.cart_price == -1 ? rdbPurchasingModel.new_price.formatter : rdbPurchasingModel.cart_price.formatter]),
                             style: TextStyle(color: Colors.red, fontSize: 12, fontWeight: FontWeight.bold),
                           )
                         ],
@@ -104,7 +102,7 @@ class FavoriteListItem extends StatelessWidget {
                       Container(
                         width: double.infinity,
                         alignment: Alignment.centerRight,
-                        child: Text(Helper.formatDate(DateTime.parse(favoriteModel.created_at), 'yyyy-MM-dd'), style: TextStyle(color: Colors.black, fontSize: 12, fontWeight: FontWeight.bold)),
+                        child: Text(Helper.formatDate(DateTime.parse(rdbPurchasingModel.created_at), 'yyyy-MM-dd'), style: TextStyle(color: Colors.black, fontSize: 12, fontWeight: FontWeight.bold)),
                       )
                     ],
                   ),

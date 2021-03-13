@@ -42,7 +42,7 @@ class _AddSupplierWidgetState extends State<AddSupplierWidget> {
     if (_isLoading) return;
     String supplierName = _supplierController.text.trim();
     if (supplierName.isEmpty) {
-      Helper.showToast("Please insert Supplier name", false);
+      Helper.showToast("仕入れ先名を入力してください。", false);
       return;
     }
     FocusScope.of(context).requestFocus(FocusNode());
@@ -82,7 +82,7 @@ class _AddSupplierWidgetState extends State<AddSupplierWidget> {
             child: Container(
               alignment: Alignment.center,
               child: Text(
-                "Add new supplier",
+                "仕入れ先追加",
                 style: TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold),
               ),
             ),
@@ -96,7 +96,7 @@ class _AddSupplierWidgetState extends State<AddSupplierWidget> {
                 style: TextStyle(fontSize: 18.0, color: Colors.black),
                 decoration: InputDecoration(
                     contentPadding: EdgeInsets.fromLTRB(16, 10, 16, 10),
-                    hintText: "Supplier Name",
+                    hintText: "仕入れ先名",
                     hintStyle: TextStyle(color: Colors.black),
                     enabledBorder: OutlineInputBorder(borderSide: const BorderSide(color: Colors.black, width: 0.5)),
                     focusedBorder: OutlineInputBorder(borderSide: const BorderSide(color: Colors.black, width: 0.5))),
@@ -111,7 +111,7 @@ class _AddSupplierWidgetState extends State<AddSupplierWidget> {
                   color: Constants.ButtonColor,
                   disabled: _isLoading,
                   loading: _isLoading,
-                  title: "Add",
+                  title: "追加",
                   fontColor: Colors.white,
                   fontSize: 15,
                   loadingColor: Colors.black,
