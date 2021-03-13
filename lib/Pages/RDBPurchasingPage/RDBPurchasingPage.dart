@@ -6,9 +6,11 @@ import 'package:monito/Database/DatabaseProvider.dart';
 import 'package:monito/Helper/Constants.dart';
 import 'package:monito/Helper/HttpHelper.dart';
 import 'package:monito/Pages/RDBPurchasingPage/Model/RDBPurchasingModel.dart';
+import 'package:monito/Pages/RDBPurchasingPage/SubPages/RDBPurchasingDetailPage.dart';
 import 'package:monito/Pages/RDBPurchasingPage/Widgets/RDBPurchasingListItem.dart';
 import 'package:monito/Widgets/Loading.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:sprintf/sprintf.dart';
 
 class RDBPurchasingPage extends StatefulWidget {
   @override
@@ -23,9 +25,16 @@ class _RDBPurchasingPageState extends State<RDBPurchasingPage> {
   int _currentPage = 1;
   bool _hasNextPage = true;
   bool _isInit = false;
+  String currentOrder = "purchasing";
 
   List<RDBPurchasingModel> rdbPurchasingList = [];
   List<Map<String, dynamic>> categories = [];
+  List<Map<String, dynamic>> sortOrders = [
+    {'label': '登録件数', 'value': 'purchasing'},
+    {'label': '価格', 'value': 'cart_price'},
+    {'label': 'ランキング', 'value': 'sales_rank'},
+    {'label': '新着', 'value': 'created_at'}
+  ];
 
   @override
   void initState() {
@@ -49,11 +58,22 @@ class _RDBPurchasingPageState extends State<RDBPurchasingPage> {
     _getRDBPurchasingList();
   }
 
+  _sortOrderHandler(String value) {
+    if (currentOrder == value) return;
+    currentOrder = value;
+    rdbPurchasingList.clear();
+    _currentPage = 1;
+    _hasNextPage = true;
+    _isInit = false;
+    setState(() {});
+    _getRDBPurchasingList();
+  }
+
   _getRDBPurchasingList() async {
     try {
       if (this._hasNextPage) {
         List<RDBPurchasingModel> lists = [];
-        String url = Constants.URL + "api/rdb/purchasing?=" + _currentPage.toString();
+        String url = sprintf("%sapi/rdb/purchasing?p=%s&sort=%s", [Constants.URL, _currentPage.toString(), currentOrder]);
         var response = await HttpHelper.authGet(context, null, url, {});
         if (mounted) {
           if (response != null) {
@@ -62,8 +82,7 @@ class _RDBPurchasingPageState extends State<RDBPurchasingPage> {
               _currentPage++;
               _hasNextPage = _currentPage <= result['data']['last_page'];
               for (var item in result['data']['data']) {
-                //item['category_name'] = categories.firstWhere((element) => element['cat_id'] == item['cat_id'].toString())['name'];
-                item['category_name'] = '';
+                item['category_name'] = categories.firstWhere((element) => element['cat_id'] == item['cat_id'].toString())['name'];
                 lists.add(RDBPurchasingModel.fromJson(item));
               }
               if (!_isInit) {
@@ -102,6 +121,20 @@ class _RDBPurchasingPageState extends State<RDBPurchasingPage> {
         centerTitle: true,
         backgroundColor: Constants.StatusBarColor,
         title: Text("仕入れ予定RDB"),
+        actions: [
+          PopupMenuButton<String>(
+            onSelected: _sortOrderHandler,
+            itemBuilder: (BuildContext context) {
+              return sortOrders.map((choice) {
+                return PopupMenuItem<String>(
+                  value: choice['value'],
+                  child: Text(choice['label']),
+                  textStyle: TextStyle(color: choice['value'] == currentOrder ? Colors.blue : Colors.black),
+                );
+              }).toList();
+            },
+          ),
+        ],
       ),
       backgroundColor: Constants.BackgroundColor,
       body: SafeArea(
@@ -139,7 +172,7 @@ class _RDBPurchasingPageState extends State<RDBPurchasingPage> {
                               return RDBPurchasingListItem(
                                   rdbPurchasingModel: rdbPurchasingList[index],
                                   onPressed: () {
-                                    //Navigator.push(context, PageTransition(type: PageTransitionType.fade, child: RDBPu(rankModel: rankList[index]), inheritTheme: true, curve: Curves.easeIn, ctx: context));
+                                    Navigator.push(context, PageTransition(type: PageTransitionType.fade, child: RDBPurchasingDetailPage(rdbPurchasingModel: rdbPurchasingList[index]), inheritTheme: true, curve: Curves.easeIn, ctx: context));
                                   });
                             },
                             separatorBuilder: (context, index) => Divider(color: Colors.transparent),

@@ -10,6 +10,7 @@ import 'package:monito/Pages/LoginPage/LoginPage.dart';
 import 'package:monito/Pages/MainPage/Widgets/GridButton.dart';
 import 'package:monito/Pages/PurchasedPage/PurchasedPage.dart';
 import 'package:monito/Pages/PurchasingPage/PurchasingPage.dart';
+import 'package:monito/Pages/RDBPurchasedPage/RDBPurchasedPage.dart';
 import 'package:monito/Pages/RDBPurchasingPage/RDBPurchasingPage.dart';
 import 'package:monito/Pages/RankInPage/RankInPage.dart';
 import 'package:monito/Pages/SettingPage/SettingPage.dart';
@@ -222,6 +223,7 @@ class _MainPageState extends State<MainPage> {
         Navigator.push(context, PageTransition(type: PageTransitionType.fade, child: RDBPurchasingPage(), inheritTheme: true, curve: Curves.easeIn, ctx: context));
         break;
       case Constants.RDBPurchasedPage:
+        Navigator.push(context, PageTransition(type: PageTransitionType.fade, child: RDBPurchasedPage(), inheritTheme: true, curve: Curves.easeIn, ctx: context));
         break;
     }
   }
@@ -547,7 +549,9 @@ class _MainPageState extends State<MainPage> {
                                   child: Material(
                                     color: Color(0xFF1D2939),
                                     child: InkWell(
-                                      onTap: () {},
+                                      onTap: () {
+                                        _switchPage(Constants.RDBPurchasedPage);
+                                      },
                                       child: SizedBox(
                                         width: width / 2 + 50,
                                         height: width / 4,

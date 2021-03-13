@@ -1,7 +1,7 @@
-class RDBPurchasingModel {
+class RDBPurchasedModel {
   int id;
   String asin;
-  int purchasing;
+  int purchased;
   String title;
   String cat_id;
   String photo;
@@ -16,35 +16,35 @@ class RDBPurchasingModel {
   int used_offers;
   String created_at;
   String updated_at;
-  bool isPurchasing;
   String category_name;
+  bool isPurchasing;
 
-  RDBPurchasingModel(
-    this.id,
-    this.asin,
-    this.purchasing,
-    this.title,
-    this.cat_id,
-    this.photo,
-    this.jan,
-    this.cart_price,
-    this.amazon_price,
-    this.new_price,
-    this.used_price,
-    this.sales_rank,
-    this.offers,
-    this.new_offers,
-    this.used_offers,
-    this.created_at,
-    this.updated_at,
-    this.isPurchasing,
-    this.category_name,
-  );
+  RDBPurchasedModel(
+      this.id,
+      this.asin,
+      this.purchased,
+      this.title,
+      this.cat_id,
+      this.photo,
+      this.jan,
+      this.cart_price,
+      this.amazon_price,
+      this.new_price,
+      this.used_price,
+      this.sales_rank,
+      this.offers,
+      this.new_offers,
+      this.used_offers,
+      this.created_at,
+      this.updated_at,
+      this.category_name,
+      this.isPurchasing,
+      );
 
-  RDBPurchasingModel.fromJson(Map<String, dynamic> json) {
+  RDBPurchasedModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     asin = json['asin'];
-    purchasing = json['purchasing'];
+    purchased = json['purchased'];
     title = json['title'];
     cat_id = json['cat_id'].toString();
     photo = json['photo'];

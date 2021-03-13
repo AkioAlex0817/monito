@@ -147,10 +147,10 @@ class _LoginPageState extends State<LoginPage> {
           data['profile']['email'],
           data['limitation']['tracker'],
           data['limitation']['deals'],
-          data['limitation']['achievelist'],
-          data['limitation']['wishlist'],
-          data['limitation']['purchasinglist'],
-          data['limitation']['purchasedlist'],
+          data['limitation']['achievelist'] is int ? data['limitation']['achievelist'] : 0,
+          data['limitation']['wishlist'] is int ? data['limitation']['wishlist'] : 0,
+          data['limitation']['purchasinglist'] is int ? data['limitation']['purchasinglist'] : 0,
+          data['limitation']['purchasedlist'] is int ? data['limitation']['purchasedlist'] : 0,
           data['limitation']['rdb'],
         );
       }

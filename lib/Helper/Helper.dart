@@ -73,6 +73,7 @@ class Helper {
 
   static String imageURL(String filename) {
     if(filename == null) return null;
+
     List<String> params = filename.split(".");
     return Constants.ImageURL + params[0] + ".SL160." + params[1];
   }

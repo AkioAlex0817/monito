@@ -1,7 +1,7 @@
-class RDBPurchasingModel {
+class RDBPurchasedDetailModel {
   int id;
   String asin;
-  int purchasing;
+  int purchased;
   String title;
   String cat_id;
   String photo;
@@ -16,13 +16,12 @@ class RDBPurchasingModel {
   int used_offers;
   String created_at;
   String updated_at;
-  bool isPurchasing;
-  String category_name;
+  int avg_price;
 
-  RDBPurchasingModel(
+  RDBPurchasedDetailModel(
     this.id,
     this.asin,
-    this.purchasing,
+    this.purchased,
     this.title,
     this.cat_id,
     this.photo,
@@ -37,14 +36,13 @@ class RDBPurchasingModel {
     this.used_offers,
     this.created_at,
     this.updated_at,
-    this.isPurchasing,
-    this.category_name,
+    this.avg_price,
   );
 
-  RDBPurchasingModel.fromJson(Map<String, dynamic> json) {
+  RDBPurchasedDetailModel.fromJson(Map<String, dynamic> json) {
     id = json['id'];
     asin = json['asin'];
-    purchasing = json['purchasing'];
+    purchased = json['purchased'];
     title = json['title'];
     cat_id = json['cat_id'].toString();
     photo = json['photo'];
@@ -59,7 +57,6 @@ class RDBPurchasingModel {
     used_offers = json['used_offers'];
     created_at = json['created_at'];
     updated_at = json['updated_at'];
-    category_name = json['category_name'];
-    isPurchasing = false;
+    avg_price = json['avg_price'];
   }
 }

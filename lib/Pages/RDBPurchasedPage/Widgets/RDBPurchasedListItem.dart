@@ -2,15 +2,15 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:monito/Helper/Helper.dart';
-import 'package:monito/Pages/RDBPurchasingPage/Model/RDBPurchasingModel.dart';
+import 'package:monito/Pages/RDBPurchasedPage/Model/RDBPurchasedModel.dart';
 import 'package:monito/Helper/IntExtensions.dart';
 import 'package:sprintf/sprintf.dart';
 
-class RDBPurchasingListItem extends StatelessWidget {
-  final RDBPurchasingModel rdbPurchasingModel;
+class RDBPurchasedListItem extends StatelessWidget {
+  final RDBPurchasedModel rdbPurchasedModel;
   final VoidCallback onPressed;
 
-  RDBPurchasingListItem({@required this.rdbPurchasingModel, @required this.onPressed});
+  RDBPurchasedListItem({@required this.rdbPurchasedModel, @required this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -41,13 +41,10 @@ class RDBPurchasingListItem extends StatelessWidget {
                   padding: EdgeInsets.all(3),
                   child: AspectRatio(
                     aspectRatio: 1,
-                    child: Hero(
-                      tag: 'rdb_purchasing_image_' + rdbPurchasingModel.asin,
-                      child: CachedNetworkImage(
-                        placeholder: (context, url) => CupertinoActivityIndicator(radius: 10),
-                        errorWidget: (context, url, error) => Icon(Icons.error, color: Colors.red),
-                        imageUrl: Helper.imageURL(rdbPurchasingModel.photo),
-                      ),
+                    child: CachedNetworkImage(
+                      placeholder: (context, url) => CupertinoActivityIndicator(radius: 10),
+                      errorWidget: (context, url, error) => Icon(Icons.error, color: Colors.red),
+                      imageUrl: Helper.imageURL(rdbPurchasedModel.photo),
                     ),
                   ),
                 ),
@@ -56,20 +53,14 @@ class RDBPurchasingListItem extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Hero(
-                        tag: "rdb_purchasing_title_" + rdbPurchasingModel.asin,
-                        child: Container(
-                          alignment: Alignment.centerLeft,
-                          child: Material(
-                            type: MaterialType.transparency,
-                            child: Text(
-                              rdbPurchasingModel.title,
-                              style: TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.bold),
-                              maxLines: 2,
-                              softWrap: true,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
+                      Container(
+                        alignment: Alignment.centerLeft,
+                        child: Text(
+                          rdbPurchasedModel.title,
+                          style: TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.bold),
+                          maxLines: 2,
+                          softWrap: true,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                       Row(
@@ -79,23 +70,23 @@ class RDBPurchasingListItem extends StatelessWidget {
                             color: Colors.transparent,
                             child: InkWell(
                               onLongPress: () {
-                                Helper.clipBoardWidget(rdbPurchasingModel.asin, context);
+                                Helper.clipBoardWidget(rdbPurchasedModel.asin, context);
                               },
-                              child: Text("ASIN: ${rdbPurchasingModel.asin}", style: TextStyle(color: Colors.black45, fontSize: 12, fontWeight: FontWeight.bold)),
+                              child: Text("ASIN: ${rdbPurchasedModel.asin}", style: TextStyle(color: Colors.black45, fontSize: 12, fontWeight: FontWeight.bold)),
                             ),
                           ),
-                          Text("JAN: ${rdbPurchasingModel.jan}", style: TextStyle(color: Colors.black45, fontSize: 12, fontWeight: FontWeight.bold)),
+                          Text("JAN: ${rdbPurchasedModel.jan}", style: TextStyle(color: Colors.black45, fontSize: 12, fontWeight: FontWeight.bold)),
                         ],
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            sprintf("%s位", [rdbPurchasingModel.sales_rank.formatter]),
+                            sprintf("%s位", [rdbPurchasedModel.sales_rank.formatter]),
                             style: TextStyle(color: Colors.red, fontSize: 12, fontWeight: FontWeight.bold),
                           ),
                           Text(
-                            sprintf("%s円", [rdbPurchasingModel.cart_price == -1 ? rdbPurchasingModel.new_price.formatter : rdbPurchasingModel.cart_price.formatter]),
+                            sprintf("%s円", [rdbPurchasedModel.cart_price == -1 ? rdbPurchasedModel.new_price.formatter : rdbPurchasedModel.cart_price.formatter]),
                             style: TextStyle(color: Colors.red, fontSize: 12, fontWeight: FontWeight.bold),
                           )
                         ],
@@ -103,7 +94,7 @@ class RDBPurchasingListItem extends StatelessWidget {
                       Container(
                         width: double.infinity,
                         alignment: Alignment.centerRight,
-                        child: Text("リスト追加件数: ${rdbPurchasingModel.purchasing.formatter}件", style: TextStyle(color: Colors.black, fontSize: 12, fontWeight: FontWeight.bold)),
+                        child: Text("リスト追加件数: ${rdbPurchasedModel.purchased.formatter}件", style: TextStyle(color: Colors.black, fontSize: 12, fontWeight: FontWeight.bold)),
                       )
                     ],
                   ),
