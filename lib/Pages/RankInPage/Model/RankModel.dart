@@ -15,6 +15,7 @@ class RankModel {
   int stock;
   String seller_stocks;
   int last_sales_rank;
+  int sales_rank_at_rankin;
   int sales_rank_delta;
   String current;
   String delta;
@@ -26,7 +27,7 @@ class RankModel {
   bool isFavorite;
   String category_name;
 
-  RankModel(this.cat_id, this.asin, this.title, this.photo, this.sales_rank, this.amazon_price, this.cart_price, this.new_price, this.used_price, this.offers, this.new_offers, this.used_offers, this.has_amazon_offer, this.stock, this.seller_stocks, this.last_sales_rank, this.sales_rank_delta,
+  RankModel(this.cat_id, this.asin, this.title, this.photo, this.sales_rank, this.amazon_price, this.cart_price, this.new_price, this.used_price, this.offers, this.new_offers, this.used_offers, this.has_amazon_offer, this.stock, this.seller_stocks, this.last_sales_rank, this.sales_rank_at_rankin, this.sales_rank_delta,
       this.current, this.delta, this.delta_last, this.last_update, this.stock_updated_at, this.rankin_at, this.jan, this.isFavorite, this.category_name);
 
   RankModel.fromJson(Map<String, dynamic> json) {
@@ -46,6 +47,7 @@ class RankModel {
     stock = json['stock'];
     seller_stocks = json['seller_stocks'];
     last_sales_rank = json['last_sales_rank'];
+    sales_rank_at_rankin = json['sales_rank_at_rankin'];
     sales_rank_delta = json['sales_rank_delta'];
     current = json['current'];
     delta = json['delta'];

@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "519618351540",
+    "project_id": "umc-monito",
+    "storage_bucket": "umc-monito.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:519618351540:android:446d3ed0cad264aea3e2e1",
+        "android_client_info": {
+          "package_name": "com.laaf2020.monito"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "519618351540-8r4n93i4avietdvuj2j0aofijeokar00.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC-uIFKapNJN5wtXauH-VoaZFiJwcMEi4g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "519618351540-8r4n93i4avietdvuj2j0aofijeokar00.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

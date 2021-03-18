@@ -48,7 +48,6 @@ class _PurchasedPageState extends State<PurchasedPage> {
   _init() async {
     categories = await _databaseProvider.getAllCategories();
     suppliers = await _databaseProvider.getAllSuppliers();
-    print(suppliers);
     _getPurchasedList();
   }
 

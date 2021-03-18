@@ -73,21 +73,8 @@ class FavoriteListItem extends StatelessWidget {
                           ),
                         ),
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              onLongPress: () {
-                                Helper.clipBoardWidget(favoriteModel.asin, context);
-                              },
-                              child: Text("ASIN: ${favoriteModel.asin}", style: TextStyle(color: Colors.black45, fontSize: 12, fontWeight: FontWeight.bold)),
-                            ),
-                          ),
-                          Text("JAN: ${favoriteModel.jan}", style: TextStyle(color: Colors.black45, fontSize: 12, fontWeight: FontWeight.bold)),
-                        ],
-                      ),
+                      Text("ASIN: ${favoriteModel.asin}", style: TextStyle(color: Colors.black45, fontSize: 12, fontWeight: FontWeight.bold)),
+                      Helper.isNullOrEmpty(favoriteModel.jan) ? Container() : Text("JAN: ${favoriteModel.jan}", style: TextStyle(color: Colors.black45, fontSize: 12, fontWeight: FontWeight.bold)),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [

@@ -73,21 +73,8 @@ class AchieveListItem extends StatelessWidget {
                           ),
                         ),
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              onLongPress: () {
-                                Helper.clipBoardWidget(achieveModel.asin, context);
-                              },
-                              child: Text("ASIN: ${achieveModel.asin}", style: TextStyle(color: Colors.black45, fontSize: 12, fontWeight: FontWeight.bold)),
-                            ),
-                          ),
-                          Text("JAN: ${achieveModel.jan}", style: TextStyle(color: Colors.black45, fontSize: 12, fontWeight: FontWeight.bold)),
-                        ],
-                      ),
+                      Text("ASIN: ${achieveModel.asin}", style: TextStyle(color: Colors.black45, fontSize: 12, fontWeight: FontWeight.bold)),
+                      Helper.isNullOrEmpty(achieveModel.jan) ? Container() : Text("JAN: ${achieveModel.jan}", style: TextStyle(color: Colors.black45, fontSize: 12, fontWeight: FontWeight.bold)),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [

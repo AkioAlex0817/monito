@@ -13,7 +13,8 @@ import 'package:monito/Pages/PurchasingPage/PurchasingPage.dart';
 import 'package:monito/Pages/RDBPurchasedPage/RDBPurchasedPage.dart';
 import 'package:monito/Pages/RDBPurchasingPage/RDBPurchasingPage.dart';
 import 'package:monito/Pages/RankInPage/RankInPage.dart';
-import 'package:monito/Pages/SettingPage/SettingPage.dart';
+import 'package:monito/Pages/SettingPage/OfflineSettingPage.dart';
+import 'package:monito/Pages/SettingPage/OnlineSettingPage.dart';
 import 'package:monito/Pages/SettingPage/Widgets/SettingListItem.dart';
 import 'package:monito/Pages/UserSetting/PasswordUpdatePage.dart';
 import 'package:monito/main.dart';
@@ -217,7 +218,12 @@ class _MainPageState extends State<MainPage> {
         }
         break;
       case Constants.SettingPage:
-        Navigator.push(context, PageTransition(type: PageTransitionType.fade, child: SettingPage(), inheritTheme: true, curve: Curves.easeIn, ctx: context));
+        if(isLogin){
+          Navigator.push(context, PageTransition(type: PageTransitionType.fade, child: OnlineSettingPage(), inheritTheme: true, curve: Curves.easeIn, ctx: context));
+        }else{
+          Navigator.push(context, PageTransition(type: PageTransitionType.fade, child: OfflineSettingPage(), inheritTheme: true, curve: Curves.easeIn, ctx: context));
+
+        }
         break;
       case Constants.RDBPurchasingPage:
         Navigator.push(context, PageTransition(type: PageTransitionType.fade, child: RDBPurchasingPage(), inheritTheme: true, curve: Curves.easeIn, ctx: context));
@@ -333,7 +339,7 @@ class _MainPageState extends State<MainPage> {
                         AppBar(
                           centerTitle: true,
                           backgroundColor: Constants.StatusBarColor,
-                          title: Text("設定", style: TextStyle(color: Colors.white)),
+                          title: Text("アカウント", style: TextStyle(color: Colors.white)),
                         ),
                         Container(
                           child: SingleChildScrollView(

@@ -72,21 +72,8 @@ class RDBPurchasingListItem extends StatelessWidget {
                           ),
                         ),
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              onLongPress: () {
-                                Helper.clipBoardWidget(rdbPurchasingModel.asin, context);
-                              },
-                              child: Text("ASIN: ${rdbPurchasingModel.asin}", style: TextStyle(color: Colors.black45, fontSize: 12, fontWeight: FontWeight.bold)),
-                            ),
-                          ),
-                          Text("JAN: ${rdbPurchasingModel.jan}", style: TextStyle(color: Colors.black45, fontSize: 12, fontWeight: FontWeight.bold)),
-                        ],
-                      ),
+                      Text("ASIN: ${rdbPurchasingModel.asin}", style: TextStyle(color: Colors.black45, fontSize: 12, fontWeight: FontWeight.bold)),
+                      Helper.isNullOrEmpty(rdbPurchasingModel.jan) ? Container() : Text("JAN: ${rdbPurchasingModel.jan}", style: TextStyle(color: Colors.black45, fontSize: 12, fontWeight: FontWeight.bold)),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [

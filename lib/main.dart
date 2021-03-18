@@ -1,13 +1,16 @@
 import 'dart:io';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
 import 'package:monito/Pages/SplashPage/SplashPage.dart';
 import 'package:package_info/package_info.dart';
-
+import 'Helper/Helper.dart';
 import 'Helper/SharePreferenceUtil.dart';
 
 bool isIOS;
+bool isTest = false;
 String APP_VERSION;
 final currency = new NumberFormat("#,##0", "ja-JP");
 bool isLogin = false;
@@ -23,10 +26,12 @@ int allowWishList = 0;
 int allowPurchasingList = 0;
 int allowPurchasedList = 0;
 bool allowRDB = false;
+String deviceToken = "";
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   isIOS = Platform.isIOS;
+  deviceToken = "Test_device Token";
   PackageInfo packageInfo = await PackageInfo.fromPlatform();
   APP_VERSION = packageInfo.version;
   runApp(MyApp());
@@ -36,11 +41,58 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   static SharePreferenceUtil shareUtils;
   static Locale kLocale = const Locale("ja", "jp");
+  static FirebaseMessaging firebaseMessaging = FirebaseMessaging();
+  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  AndroidInitializationSettings androidInitializationSettings;
+  IOSInitializationSettings iosInitializationSettings;
+  InitializationSettings initializationSettings;
 
   @override
   Widget build(BuildContext context) {
+    androidInitializationSettings = AndroidInitializationSettings('icon');
+    iosInitializationSettings = IOSInitializationSettings();
+    initializationSettings = InitializationSettings(android: androidInitializationSettings, iOS: iosInitializationSettings);
+    flutterLocalNotificationsPlugin.initialize(initializationSettings);
     shareUtils = new SharePreferenceUtil();
     shareUtils.instance();
+    firebaseMessaging.configure(onMessage: (Map<String, dynamic> message) async {
+      print(message);
+      String title = "";
+      String body = "";
+      String image = "";
+      if (isIOS) {
+        final notification = message['aps'];
+        title = notification['alert']['title'];
+        body = notification['alert']['body'];
+        image = message['image'] != null && message['image'] != "" ? message['image'] : null;
+      } else {
+        final data = message['data'];
+        title = data['title'];
+        body = data['body'];
+        image = data['image'] != null && data['image'] != "" ? data['image'] : null;
+        final String largeIconPath = await Helper.downloadAndSaveFile(image, 'largeIcon');
+        AndroidNotificationDetails androidNotificationDetails = AndroidNotificationDetails(
+          "default",
+          'default',
+          'default',
+          priority: Priority.max,
+          importance: Importance.defaultImportance,
+          icon: "icon",
+          channelShowBadge: true,
+          largeIcon: FilePathAndroidBitmap(largeIconPath),
+        );
+        NotificationDetails notificationDetails = NotificationDetails(android: androidNotificationDetails);
+        flutterLocalNotificationsPlugin.show(0, title, body, notificationDetails);
+      }
+    }, onLaunch: (Map<String, dynamic> message) async {
+      print(message);
+    }, onResume: (Map<String, dynamic> message) async {
+      print(message);
+    });
+    if (isIOS) {
+      firebaseMessaging.requestNotificationPermissions(const IosNotificationSettings(sound: true, badge: true, alert: true));
+    }
+
     return MaterialApp(
       title: 'MONITO',
       debugShowCheckedModeBanner: false,

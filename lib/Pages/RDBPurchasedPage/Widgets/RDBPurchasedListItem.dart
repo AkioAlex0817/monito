@@ -63,21 +63,8 @@ class RDBPurchasedListItem extends StatelessWidget {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              onLongPress: () {
-                                Helper.clipBoardWidget(rdbPurchasedModel.asin, context);
-                              },
-                              child: Text("ASIN: ${rdbPurchasedModel.asin}", style: TextStyle(color: Colors.black45, fontSize: 12, fontWeight: FontWeight.bold)),
-                            ),
-                          ),
-                          Text("JAN: ${rdbPurchasedModel.jan}", style: TextStyle(color: Colors.black45, fontSize: 12, fontWeight: FontWeight.bold)),
-                        ],
-                      ),
+                      Text("ASIN: ${rdbPurchasedModel.asin}", style: TextStyle(color: Colors.black45, fontSize: 12, fontWeight: FontWeight.bold)),
+                      Helper.isNullOrEmpty(rdbPurchasedModel.jan) ? Container() : Text("JAN: ${rdbPurchasedModel.jan}", style: TextStyle(color: Colors.black45, fontSize: 12, fontWeight: FontWeight.bold)),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [

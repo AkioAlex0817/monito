@@ -137,7 +137,7 @@ class HttpHelper {
     }
   }
 
-  static Future<http.Response> authGet(BuildContext context, http.Client client, String url, Map<String, String> headers) async {
+  static Future<http.Response> authGet(BuildContext context, http.Client client, String url, Map<String, String> headers, {needResponse = false}) async {
     String tokenString = await MyApp.shareUtils.getString(Constants.SharePreferencesKey);
     if (Helper.checkEmptyToken(tokenString)) {
       Navigator.of(context).pushAndRemoveUntil(
@@ -165,7 +165,8 @@ class HttpHelper {
       var response = await client.get(Uri.parse(url), headers: headers);
       if (response.statusCode == 200 || response.statusCode == 201) {
         return response;
-      } else if (response.statusCode == 401) {
+      }
+      if (response.statusCode == 401) {
         await MyApp.shareUtils.setString(Constants.SharePreferencesKey, null);
         Navigator.of(context).pushAndRemoveUntil(
             PageRouteBuilder(
@@ -180,11 +181,13 @@ class HttpHelper {
                     child: child,
                   );
                 }),
-            (_) => false);
-        return null;
-      } else {
+                (_) => false);
         return null;
       }
+      if(needResponse){
+        return response;
+      }
+      return null;
     } on SocketException catch (socketErr) {
       print("SocketException: $socketErr");
       return null;

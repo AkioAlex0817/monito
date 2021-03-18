@@ -73,21 +73,8 @@ class RankListItem extends StatelessWidget {
                           ),
                         ),
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Material(
-                            color: Colors.transparent,
-                            child: InkWell(
-                              onLongPress: () {
-                                Helper.clipBoardWidget(rankModel.asin, context);
-                              },
-                              child: Text("ASIN: ${rankModel.asin}", style: TextStyle(color: Colors.black45, fontSize: 12, fontWeight: FontWeight.bold)),
-                            ),
-                          ),
-                          Text("JAN: ${rankModel.jan}", style: TextStyle(color: Colors.black45, fontSize: 12, fontWeight: FontWeight.bold)),
-                        ],
-                      ),
+                      Text("ASIN: ${rankModel.asin}", style: TextStyle(color: Colors.black45, fontSize: 12, fontWeight: FontWeight.bold)),
+                      Helper.isNullOrEmpty(rankModel.jan) ? Container() : Text("JAN: ${rankModel.jan}", style: TextStyle(color: Colors.black45, fontSize: 12, fontWeight: FontWeight.bold)),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [

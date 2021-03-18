@@ -10,6 +10,7 @@ import 'package:monito/Helper/HttpHelper.dart';
 import 'package:monito/Pages/MainPage/MainPage.dart';
 import 'package:monito/main.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:sprintf/sprintf.dart';
 
 class SplashPage extends StatefulWidget {
   @override
@@ -18,7 +19,7 @@ class SplashPage extends StatefulWidget {
 
 class _SplashPageState extends State<SplashPage> {
   final DatabaseProvider _databaseProvider = DatabaseProvider.db;
-  String landingDescription = "";
+  String landingDescription = "設定同期中。。。";
 
   @override
   Widget build(BuildContext context) {
@@ -90,6 +91,9 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   void _init() async {
+    deviceToken = await MyApp.firebaseMessaging.getToken();
+    print("alex");
+    print(deviceToken);
     Timer(Duration(seconds: 3), () => _nextPage());
   }
 
@@ -130,29 +134,18 @@ class _SplashPageState extends State<SplashPage> {
       Navigator.pushAndRemoveUntil(context, PageTransition(child: MainPage(), type: PageTransitionType.fade), (route) => false);
     } else {
       isLogin = true;
-      //sync suppliers name
-      String supplierUrl = Constants.URL + "api/setting/suppliers";
-      var supplierResponse = await HttpHelper.authGet(context, null, supplierUrl, {});
-      if (mounted && supplierResponse != null) {
-        var supplierResult = json.decode(supplierResponse.body);
-        if (supplierResult['result'] == "success") {
-          for (var item in supplierResult['data']) {
-            await _databaseProvider.insertOrUpdateSupplier(item['id'], item['name']);
-          }
-        }
-      }
       //update user info
       setState(() {
         landingDescription = "ユーザ情報取り込み中。。。";
       });
-
-      String url = Constants.URL + "api/me";
+      String url = sprintf("%sapi/me?is_ios=%d&device_token=%s&is_test=%s", [Constants.URL, isIOS ? 1 : 0, deviceToken, isTest ? "1" : "0"]);
       var response = await HttpHelper.authGet(context, null, url, {});
       if (mounted) {
         if (response != null) {
           var result = json.decode(response.body);
           if (result['result'] == "success") {
             var data = result['data'];
+            //init user limitation
             Helper.setMemberInfo(
               data['current_plan'],
               data['profile']['id'],
@@ -166,18 +159,12 @@ class _SplashPageState extends State<SplashPage> {
               data['limitation']['purchasedlist'] is int ? data['limitation']['purchasedlist'] : 0,
               data['limitation']['rdb'],
             );
-          }
-        }
-        //update user setting
-        setState(() {
-          landingDescription = "設定初期化中。。。";
-        });
-        String settingURL = Constants.URL + "api/setting";
-        var settingResponse = await HttpHelper.authGet(context, null, settingURL, {});
-        if (mounted && settingResponse != null) {
-          var settingResult = json.decode(settingResponse.body);
-          if (settingResult['result'] == 'success') {
-            await _databaseProvider.insertOrUpdateSetting(memberId, settingResult['data']['keepa_api_key'], settingResult['data']['price_archive_percent'], settingResult['data']['track_ranking']);
+            //sync suppliers name
+            for (var item in data['suppliers']) {
+              await _databaseProvider.insertOrUpdateSupplier(item['id'], item['name']);
+            }
+            //update user setting
+            await _databaseProvider.insertOrUpdateSetting(memberId, data['user_settings']['keepa_api_key'], data['user_settings']['price_archive_percent'], data['user_settings']['track_ranking']);
           }
         }
         Navigator.pushAndRemoveUntil(context, PageTransition(child: MainPage(), type: PageTransitionType.fade), (route) => false);

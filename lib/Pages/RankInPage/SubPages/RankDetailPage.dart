@@ -250,7 +250,7 @@ class _RankDetailPageState extends State<RankDetailPage> {
                                   child: Container(
                                     alignment: Alignment.centerRight,
                                     child: Text(
-                                      sprintf("%s位 → %s位", [widget.rankModel.last_sales_rank.formatter, widget.rankModel.sales_rank.formatter]),
+                                      sprintf("%s位 → %s位", [widget.rankModel.sales_rank_at_rankin.formatter, widget.rankModel.sales_rank.formatter]),
                                       style: TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.bold),
                                     ),
                                   ),
