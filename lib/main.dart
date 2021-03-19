@@ -65,6 +65,9 @@ class MyApp extends StatelessWidget {
         title = notification['alert']['title'];
         body = notification['alert']['body'];
         image = message['image'] != null && message['image'] != "" ? message['image'] : null;
+        IOSNotificationDetails iosNotificationDetails = new IOSNotificationDetails();
+        NotificationDetails notificationDetails = new NotificationDetails(iOS: iosNotificationDetails);
+        await flutterLocalNotificationsPlugin.show(0, title, body, notificationDetails);
       } else {
         final data = message['data'];
         title = data['title'];

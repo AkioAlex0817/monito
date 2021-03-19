@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>519618351540-gp5dls9or25ebhp1veejvtvi71p6taem.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.519618351540-gp5dls9or25ebhp1veejvtvi71p6taem</string>
+	<key>API_KEY</key>
+	<string>AIzaSyBUiv4jsdV84j4z1QSh0FvO_XzXrZc2xqU</string>
+	<key>GCM_SENDER_ID</key>
+	<string>519618351540</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.laaf2020.monito</string>
+	<key>PROJECT_ID</key>
+	<string>umc-monito</string>
+	<key>STORAGE_BUCKET</key>
+	<string>umc-monito.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:519618351540:ios:570cb0054ff49c46a3e2e1</string>
+</dict>
+</plist>
