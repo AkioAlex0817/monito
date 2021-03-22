@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 class Constants {
   static const SharePreferencesKey = "token_string";
 
-  // static const URL = "http://192.168.31.200/fastalert/public/";
-  // static const client_secret = "zSf198GJMDj6qey7sD6d4nayhmvlB8z25WwFvCjy";
+  /*static const URL = "http://192.168.31.200/fastalert/public/";
+  static const client_secret = "wX8BtNCmU2I7j2Vt163JJKJBmXYXI6akwkaoTxVb";*/
+
   static const URL = "https://umc-monito.com/";
   static const client_secret = "qUHRHY9TzZfi0Nlcxv3abbwgLL3Svf0zicCP6kRv";
   static const AmazonURL = "https://www.amazon.co.jp/dp/";
@@ -34,10 +35,6 @@ class Constants {
   static const int SettingPage = 6;
   static const int RDBPurchasingPage = 7;
   static const int RDBPurchasedPage = 8;
-
-  //UnAuth User info
-  static const UnAuthTrackCategoryKey = "track_category_key";
-  static const UnAuthTrackRankingKey = "track_ranking_key";
 
   //Page Transition Time milliseconds
   static const int TransitionTime = 200;

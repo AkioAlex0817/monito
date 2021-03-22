@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:monito/Database/DatabaseProvider.dart';
@@ -6,14 +8,12 @@ import 'package:monito/Helper/Helper.dart';
 import 'package:monito/Helper/LangHelper.dart';
 import 'package:monito/Pages/AchievePage/AchievePage.dart';
 import 'package:monito/Pages/FavoritePage/FavoritePage.dart';
-import 'package:monito/Pages/LoginPage/LoginPage.dart';
 import 'package:monito/Pages/MainPage/Widgets/GridButton.dart';
 import 'package:monito/Pages/PurchasedPage/PurchasedPage.dart';
 import 'package:monito/Pages/PurchasingPage/PurchasingPage.dart';
 import 'package:monito/Pages/RDBPurchasedPage/RDBPurchasedPage.dart';
 import 'package:monito/Pages/RDBPurchasingPage/RDBPurchasingPage.dart';
 import 'package:monito/Pages/RankInPage/RankInPage.dart';
-import 'package:monito/Pages/SettingPage/OfflineSettingPage.dart';
 import 'package:monito/Pages/SettingPage/OnlineSettingPage.dart';
 import 'package:monito/Pages/SettingPage/Widgets/SettingListItem.dart';
 import 'package:monito/Pages/UserSetting/PasswordUpdatePage.dart';
@@ -22,6 +22,10 @@ import 'package:page_transition/page_transition.dart';
 import 'package:monito/Helper/IntExtensions.dart';
 
 class MainPage extends StatefulWidget {
+  final int initPage;
+
+  MainPage({this.initPage = null});
+
   @override
   _MainPageState createState() => _MainPageState();
 }
@@ -36,6 +40,9 @@ class _MainPageState extends State<MainPage> {
     super.initState();
     this.pageController = PageController(initialPage: 1);
     setState(() {});
+    if (widget.initPage != null) {
+      Timer(Duration(milliseconds: 50), () => _switchPage(widget.initPage));
+    }
   }
 
   @override
@@ -49,20 +56,16 @@ class _MainPageState extends State<MainPage> {
       onTap: () {
         switch (pos) {
           case 1:
-            if (isLogin) {
-              if (this.pageController.page != 0) {
-                if (this.pageController.page == 2) {
-                  this.pageController.jumpToPage(0);
-                } else {
-                  this.pageController.animateToPage(0, duration: Duration(milliseconds: 200), curve: Curves.easeIn);
-                }
+            if (this.pageController.page != 0) {
+              if (this.pageController.page == 2) {
+                this.pageController.jumpToPage(0);
+              } else {
+                this.pageController.animateToPage(0, duration: Duration(milliseconds: 200), curve: Curves.easeIn);
               }
-              setState(() {
-                isSelected = pos;
-              });
-            } else {
-              _loginHandler();
             }
+            setState(() {
+              isSelected = pos;
+            });
             break;
           case 2:
             if (this.pageController.page != 1) {
@@ -73,39 +76,36 @@ class _MainPageState extends State<MainPage> {
             });
             break;
           case 3:
-            if (isLogin) {
-              showCupertinoDialog(
-                context: context,
-                builder: (context) {
-                  return CupertinoAlertDialog(
-                    title: Text("サインアウトしてもよろしいでしょうか？"),
-                    actions: [
-                      CupertinoDialogAction(
-                        isDefaultAction: true,
-                        child: Text(LangHelper.YES),
-                        onPressed: () async {
-                          await MyApp.shareUtils.setString(Constants.SharePreferencesKey, null);
-                          await _databaseProvider.removeUserSetting();
-                          await _databaseProvider.removeAllCategory();
-                          await _databaseProvider.removeAllSuppliers();
-                          Navigator.of(context, rootNavigator: true).pop("Discard");
-                          Navigator.pushNamedAndRemoveUntil(context, "/", (_) => false);
-                        },
-                      ),
-                      CupertinoDialogAction(
-                        child: Text(LangHelper.NO),
-                        isDestructiveAction: true,
-                        onPressed: () {
-                          Navigator.of(context, rootNavigator: true).pop("Discard");
-                        },
-                      )
-                    ],
-                  );
-                },
-              );
-            } else {
-              _loginHandler();
-            }
+            showCupertinoDialog(
+              context: context,
+              builder: (context) {
+                return CupertinoAlertDialog(
+                  title: Text("サインアウトしてもよろしいでしょうか？"),
+                  actions: [
+                    CupertinoDialogAction(
+                      isDefaultAction: true,
+                      child: Text(LangHelper.YES),
+                      onPressed: () async {
+                        await MyApp.shareUtils.setString(Constants.SharePreferencesKey, null);
+                        await _databaseProvider.removeUserSetting();
+                        await _databaseProvider.removeAllCategory();
+                        await _databaseProvider.removeAllSuppliers();
+                        Navigator.of(context, rootNavigator: true).pop("Discard");
+                        MyApp.firebaseMessaging.deleteInstanceID();
+                        Navigator.pushNamedAndRemoveUntil(context, "/", (_) => false);
+                      },
+                    ),
+                    CupertinoDialogAction(
+                      child: Text(LangHelper.NO),
+                      isDestructiveAction: true,
+                      onPressed: () {
+                        Navigator.of(context, rootNavigator: true).pop("Discard");
+                      },
+                    )
+                  ],
+                );
+              },
+            );
             break;
         }
       },
@@ -138,92 +138,57 @@ class _MainPageState extends State<MainPage> {
   void _switchPage(int page) async {
     switch (page) {
       case Constants.RankInPage:
-        if (isLogin) {
-          Navigator.push(context, PageTransition(type: PageTransitionType.fade, child: RankInPage(), inheritTheme: true, curve: Curves.easeIn, ctx: context)).then((value) {
-            if (value != null && value == 405) {
-              _emptySettingHandler();
-            }
-            if (mounted) {
-              setState(() {});
-            }
-          });
-        } else {
-          String category = await MyApp.shareUtils.getString(Constants.UnAuthTrackCategoryKey);
-          if (category == null || category == "") {
+        Navigator.push(context, PageTransition(type: PageTransitionType.fade, child: RankInPage(), inheritTheme: true, curve: Curves.easeIn, ctx: context)).then((value) {
+          if (value != null && value == 405) {
             _emptySettingHandler();
-            return;
           }
-          int ranking = await MyApp.shareUtils.getInteger(Constants.UnAuthTrackRankingKey);
-          if (ranking == null || ranking == 0) {
-            _emptySettingHandler();
-            return;
+          if (mounted) {
+            setState(() {});
           }
-          Navigator.push(context, PageTransition(type: PageTransitionType.fade, child: RankInPage(), inheritTheme: true, curve: Curves.easeIn, ctx: context));
-        }
+        });
         break;
       case Constants.ConditionPage:
-        if (isLogin) {
-          Map<String, dynamic> userSetting = await _databaseProvider.getUserSetting(memberId);
-          if (userSetting == null || Helper.isNullOrEmpty(userSetting['keepa_api_key'])) {
-            _emptySettingHandler();
-            return;
-          }
-          Navigator.push(context, PageTransition(type: PageTransitionType.fade, child: AchievePage(), inheritTheme: true, curve: Curves.easeIn, ctx: context));
-        } else {
-          _loginHandler();
+        Map<String, dynamic> userSetting = await _databaseProvider.getUserSetting(memberId);
+        if (userSetting == null || Helper.isNullOrEmpty(userSetting['keepa_api_key'])) {
+          _emptySettingHandler();
+          return;
         }
+        Navigator.push(context, PageTransition(type: PageTransitionType.fade, child: AchievePage(), inheritTheme: true, curve: Curves.easeIn, ctx: context));
         break;
       case Constants.FavoritePage:
-        if (isLogin) {
+        Map<String, dynamic> userSetting = await _databaseProvider.getUserSetting(memberId);
+        if (userSetting == null || Helper.isNullOrEmpty(userSetting['keepa_api_key'])) {
+          _emptySettingHandler();
+          return;
+        }
+        Navigator.push(context, PageTransition(type: PageTransitionType.fade, child: FavoritePage(), inheritTheme: true, curve: Curves.easeIn, ctx: context));
+        break;
+      case Constants.PurchasingPage:
+        if (allowPurchasingList > 0) {
           Map<String, dynamic> userSetting = await _databaseProvider.getUserSetting(memberId);
           if (userSetting == null || Helper.isNullOrEmpty(userSetting['keepa_api_key'])) {
             _emptySettingHandler();
             return;
           }
-          Navigator.push(context, PageTransition(type: PageTransitionType.fade, child: FavoritePage(), inheritTheme: true, curve: Curves.easeIn, ctx: context));
+          Navigator.push(context, PageTransition(type: PageTransitionType.fade, child: PurchasingPage(), inheritTheme: true, curve: Curves.easeIn, ctx: context));
         } else {
-          _loginHandler();
-        }
-        break;
-      case Constants.PurchasingPage:
-        if (isLogin) {
-          if (allowPurchasingList > 0) {
-            Map<String, dynamic> userSetting = await _databaseProvider.getUserSetting(memberId);
-            if (userSetting == null || Helper.isNullOrEmpty(userSetting['keepa_api_key'])) {
-              _emptySettingHandler();
-              return;
-            }
-            Navigator.push(context, PageTransition(type: PageTransitionType.fade, child: PurchasingPage(), inheritTheme: true, curve: Curves.easeIn, ctx: context));
-          } else {
-            Helper.showToast("この機能を利用するためにはプランをアップグレードしてください。", false);
-          }
-        } else {
-          _loginHandler();
+          Helper.showToast("この機能を利用するためにはプランをアップグレードしてください。", false);
         }
         break;
       case Constants.PurchasedPage:
-        if (isLogin) {
-          if (allowPurchasedList > 0) {
-            Map<String, dynamic> userSetting = await _databaseProvider.getUserSetting(memberId);
-            if (userSetting == null || Helper.isNullOrEmpty(userSetting['keepa_api_key'])) {
-              _emptySettingHandler();
-              return;
-            }
-            Navigator.push(context, PageTransition(type: PageTransitionType.fade, child: PurchasedPage(), inheritTheme: true, curve: Curves.easeIn, ctx: context));
-          } else {
-            Helper.showToast("この機能を利用するためにはプランをアップグレードしてください。", false);
+        if (allowPurchasedList > 0) {
+          Map<String, dynamic> userSetting = await _databaseProvider.getUserSetting(memberId);
+          if (userSetting == null || Helper.isNullOrEmpty(userSetting['keepa_api_key'])) {
+            _emptySettingHandler();
+            return;
           }
+          Navigator.push(context, PageTransition(type: PageTransitionType.fade, child: PurchasedPage(), inheritTheme: true, curve: Curves.easeIn, ctx: context));
         } else {
-          _loginHandler();
+          Helper.showToast("この機能を利用するためにはプランをアップグレードしてください。", false);
         }
         break;
       case Constants.SettingPage:
-        if(isLogin){
-          Navigator.push(context, PageTransition(type: PageTransitionType.fade, child: OnlineSettingPage(), inheritTheme: true, curve: Curves.easeIn, ctx: context));
-        }else{
-          Navigator.push(context, PageTransition(type: PageTransitionType.fade, child: OfflineSettingPage(), inheritTheme: true, curve: Curves.easeIn, ctx: context));
-
-        }
+        Navigator.push(context, PageTransition(type: PageTransitionType.fade, child: OnlineSettingPage(), inheritTheme: true, curve: Curves.easeIn, ctx: context));
         break;
       case Constants.RDBPurchasingPage:
         Navigator.push(context, PageTransition(type: PageTransitionType.fade, child: RDBPurchasingPage(), inheritTheme: true, curve: Curves.easeIn, ctx: context));
@@ -260,14 +225,6 @@ class _MainPageState extends State<MainPage> {
         );
       },
     );
-  }
-
-  _loginHandler() {
-    Navigator.push(context, PageTransition(child: LoginPage(), type: PageTransitionType.rightToLeft, duration: Duration(milliseconds: Constants.TransitionTime), reverseDuration: Duration(milliseconds: Constants.TransitionTime), inheritTheme: true, ctx: context, curve: Curves.easeIn)).then((value) {
-      if (mounted) {
-        setState(() {});
-      }
-    });
   }
 
   Future<bool> _backHandler() async {
@@ -317,7 +274,7 @@ class _MainPageState extends State<MainPage> {
                     flex: 1,
                   ),
                   Flexible(
-                    child: tabItem(3, isLogin ? "assets/logout.png" : "assets/login.png", isLogin ? "ログアウト" : "ログイン"),
+                    child: tabItem(3, "assets/logout.png", "ログアウト"),
                     flex: 1,
                   ),
                 ],

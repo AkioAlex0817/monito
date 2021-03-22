@@ -62,7 +62,7 @@ class Helper {
   }
 
   static void setMemberInfo(String plan, int id, String name, String email, int tracker, int deals, int achievelist, int wishlist, int purchasing, int purchased, bool rdb) {
-    currentPlan = isLogin ? plan : null;
+    currentPlan = plan;
     memberId = id;
     memberName = name;
     memberEmail = email;
@@ -76,7 +76,7 @@ class Helper {
   }
 
   static String imageURL(String filename) {
-    if(filename == null) return null;
+    if (filename == null) return null;
 
     List<String> params = filename.split(".");
     return Constants.ImageURL + params[0] + ".SL160." + params[1];
@@ -106,5 +106,10 @@ class Helper {
     final File file = File(filePath);
     await file.writeAsBytes(response.bodyBytes);
     return filePath;
+  }
+
+  static Future<bool> isSignIn() async {
+    String tokenString = await MyApp.shareUtils.getString(Constants.SharePreferencesKey);
+    return !Helper.checkEmptyToken(tokenString);
   }
 }

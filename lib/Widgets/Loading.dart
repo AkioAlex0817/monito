@@ -1,17 +1,18 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
 class Loading extends StatelessWidget {
   final double size;
+  final double opacity;
+  final Color background;
 
-  Loading({this.size = 25});
+  Loading({this.size = 25, this.opacity = 0.1, this.background = Colors.grey});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       constraints: BoxConstraints.expand(),
-      decoration: BoxDecoration(color: Colors.grey.withOpacity(0.1)),
+      decoration: BoxDecoration(color: background.withOpacity(opacity)),
       child: Center(
         child: Container(
           width: 50,

@@ -6,6 +6,7 @@ import 'package:monito/Database/DatabaseProvider.dart';
 import 'package:monito/Helper/Constants.dart';
 import 'package:monito/Helper/Helper.dart';
 import 'package:monito/Helper/HttpHelper.dart';
+import 'package:monito/Pages/MainPage/MainPage.dart';
 import 'package:monito/Pages/OptCodePage/OptCodePage.dart';
 import 'package:monito/Widgets/Loading.dart';
 import 'package:monito/main.dart';
@@ -146,38 +147,17 @@ class _LoginPageState extends State<LoginPage> {
     });
 
     String url = Constants.URL + "oauth/token";
-    var response = await HttpHelper.post(
-        null,
-        url,
-        {
-          "grant_type": Constants.grant_type_password,
-          "client_id": Constants.client_id,
-          "client_secret": Constants.client_secret,
-          "scope": Constants.scope,
-          "username": username,
-          "password": password,
-        },
-        {},
-        false,
-        true);
-    if (response != null) {
-      if (mounted) {
-        Map<String, dynamic> result = jsonDecode(response.body);
+    var response = await HttpHelper.post(null, url, {"grant_type": Constants.grant_type_password, "client_id": Constants.client_id, "client_secret": Constants.client_secret, "scope": Constants.scope, "username": username, "password": password}, {}, false, true);
+    if (mounted) {
+      if (response != null) {
+        var result = json.decode(response.body);
         if (result.containsKey("error")) {
-          setState(() {
-            _isLoading = false;
-          });
-          Helper.showToast("メールアドレスもしくはパスワードが不正です。", false);
+          _errorHandler("メールアドレスもしくはパスワードが不正です。");
         } else {
           _successSignIn(response.body);
         }
-      }
-    } else {
-      if (mounted) {
-        setState(() {
-          _isLoading = false;
-        });
-        Helper.showToast("未知エラー:サーバ通信中にエラーが出ました。", false);
+      } else {
+        _errorHandler("未知エラー:サーバ通信中にエラーが出ました。");
       }
     }
   }
@@ -254,7 +234,7 @@ class _LoginPageState extends State<LoginPage> {
           setState(() {
             _isLoading = false;
           });
-          Navigator.of(context).pushReplacement(PageTransition(type: PageTransitionType.rightToLeft, child: OptCodePage(email: email), inheritTheme: false, curve: Curves.easeIn));
+          Navigator.of(context).push(PageTransition(type: PageTransitionType.rightToLeft, child: OptCodePage(email: email), inheritTheme: false, curve: Curves.easeIn));
         } else {
           setState(() {
             _isLoading = false;
@@ -278,65 +258,72 @@ class _LoginPageState extends State<LoginPage> {
       if (response != null) {
         var result = json.decode(response.body);
         if (result['result'] == "success") {
-          Navigator.of(context).pushReplacement(PageTransition(type: PageTransitionType.rightToLeft, child: OptCodePage(email: email), inheritTheme: false, curve: Curves.easeIn));
+          Navigator.of(context).push(PageTransition(type: PageTransitionType.rightToLeft, child: OptCodePage(email: email), inheritTheme: false, curve: Curves.easeIn));
         } else {
-          setState(() {
-            _isLoading = false;
-          });
-          Helper.showToast(result['message'], false);
+          _errorHandler(result['message']);
         }
       } else {
-        setState(() {
-          _isLoading = false;
-        });
-        Helper.showToast("未知エラー:サーバ通信中にエラーが出ました。", false);
+        _errorHandler("未知エラー:サーバ通信中にエラーが出ました。");
       }
     }
   }
 
   Future<void> _successSignIn(String body) async {
-    isLogin = true;
     await MyApp.shareUtils.setString(Constants.SharePreferencesKey, body);
     //Get user info
-    String url = sprintf("%sapi/me?is_ios=%d&device_token=%s&is_test=%s", [Constants.URL, isIOS ? 1 : 0, deviceToken, isTest ? "1" : "0"]);
+    String url = sprintf("%sapi/me?is_ios=%d&device_token=%s&save_token=%s", [Constants.URL, isIOS ? 1 : 0, deviceToken, isTest ? "0" : "1"]);
     var response = await HttpHelper.authGet(context, null, url, {}, needResponse: true);
-    if (mounted && response != null) {
-      if (response.statusCode == 403) {
-        //email not verified
-        isLogin = false;
-        await MyApp.shareUtils.setString(Constants.SharePreferencesKey, null);
-        //send optcode resend
-        _resendOptCode();
-        return;
-      }
-      var result = json.decode(response.body);
-      if (result['result'] == "success") {
-        var data = result['data'];
-        //init user limitation
-        Helper.setMemberInfo(
-          data['current_plan'],
-          data['profile']['id'],
-          data['profile']['name'],
-          data['profile']['email'],
-          data['limitation']['tracker'],
-          data['limitation']['deals'],
-          data['limitation']['achievelist'] is int ? data['limitation']['achievelist'] : 0,
-          data['limitation']['wishlist'] is int ? data['limitation']['wishlist'] : 0,
-          data['limitation']['purchasinglist'] is int ? data['limitation']['purchasinglist'] : 0,
-          data['limitation']['purchasedlist'] is int ? data['limitation']['purchasedlist'] : 0,
-          data['limitation']['rdb'],
-        );
-        //sync suppliers name
-        for(var item in data['suppliers']){
-          await _databaseProvider.insertOrUpdateSupplier(item['id'], item['name']);
+    if (mounted) {
+      if (response != null) {
+        if (response.statusCode == 403) {
+          //email not verified
+          await MyApp.shareUtils.setString(Constants.SharePreferencesKey, null);
+          //send optcode resend
+          _resendOptCode();
+          setState(() {
+            _isLoading = false;
+          });
+          return;
         }
-        //update user setting
-        await _databaseProvider.insertOrUpdateSetting(memberId, data['user_settings']['keepa_api_key'], data['user_settings']['price_archive_percent'], data['user_settings']['track_ranking']);
+        var result = json.decode(response.body);
+        if (result['result'] == "success") {
+          var data = result['data'];
+          //init user limitation
+          Helper.setMemberInfo(
+            data['current_plan'],
+            data['profile']['id'],
+            data['profile']['name'],
+            data['profile']['email'],
+            data['limitation']['tracker'],
+            data['limitation']['deals'],
+            data['limitation']['achievelist'] is int ? data['limitation']['achievelist'] : 0,
+            data['limitation']['wishlist'] is int ? data['limitation']['wishlist'] : 0,
+            data['limitation']['purchasinglist'] is int ? data['limitation']['purchasinglist'] : 0,
+            data['limitation']['purchasedlist'] is int ? data['limitation']['purchasedlist'] : 0,
+            data['limitation']['rdb'],
+          );
+          //sync suppliers name
+          for (var item in data['suppliers']) {
+            await _databaseProvider.insertOrUpdateSupplier(item['id'], item['name']);
+          }
+          //update user setting
+          await _databaseProvider.insertOrUpdateSetting(memberId, data['user_settings']['keepa_api_key'], data['user_settings']['price_archive_percent'], data['user_settings']['track_ranking']);
+          Navigator.pushAndRemoveUntil(context, PageTransition(child: MainPage(), type: PageTransitionType.fade), (route) => false);
+        } else {
+          _errorHandler("ユーザ情報同期化が失敗しました。");
+        }
+      } else {
+        _errorHandler("ユーザ情報同期化が失敗しました。");
       }
     }
+  }
 
-    if (Navigator.canPop(context)) {
-      Navigator.pop(context);
+  _errorHandler(String message) {
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
+      Helper.showToast(message, false);
     }
   }
 
@@ -459,29 +446,6 @@ class _LoginPageState extends State<LoginPage> {
                               ),
                               48.height,
                             ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      top: 40,
-                      left: 20,
-                      child: ClipOval(
-                        child: Material(
-                          color: Colors.black12,
-                          child: InkWell(
-                            splashColor: Colors.black26,
-                            child: SizedBox(
-                              width: 40,
-                              height: 40,
-                              child: Icon(
-                                Icons.chevron_left,
-                                color: Colors.black,
-                              ),
-                            ),
-                            onTap: () {
-                              Navigator.of(context).pop();
-                            },
                           ),
                         ),
                       ),
@@ -650,29 +614,6 @@ class _LoginPageState extends State<LoginPage> {
                                 ],
                               ),
                             ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    Positioned(
-                      top: 40,
-                      left: 20,
-                      child: ClipOval(
-                        child: Material(
-                          color: Colors.black12,
-                          child: InkWell(
-                            splashColor: Colors.black26,
-                            child: SizedBox(
-                              width: 40,
-                              height: 40,
-                              child: Icon(
-                                Icons.chevron_left,
-                                color: Colors.black,
-                              ),
-                            ),
-                            onTap: () {
-                              Navigator.of(context).pop();
-                            },
                           ),
                         ),
                       ),

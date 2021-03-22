@@ -40,7 +40,6 @@ class _RankInPageState extends State<RankInPage> {
     _init();
   }
 
-
   @override
   void dispose() {
     _scrollController?.dispose();
@@ -56,16 +55,8 @@ class _RankInPageState extends State<RankInPage> {
     try {
       if (this._hasNextPage) {
         List<RankModel> lists = [];
-        String url = "";
-        if (isLogin) {
-          url = Constants.URL + "api/deals/online?p=" + _currentPage.toString();
-        } else {
-          url = Constants.URL + "api/deals/offline";
-          String category = await MyApp.shareUtils.getString(Constants.UnAuthTrackCategoryKey);
-          int ranking = await MyApp.shareUtils.getInteger(Constants.UnAuthTrackRankingKey);
-          url = url + "?category=" + category + "&ranking=" + ranking.toString() + "&p=" + _currentPage.toString();
-        }
-        var response = isLogin ? await HttpHelper.authGet(context, null, url, {}) : await HttpHelper.get(null, url, {});
+        String url = Constants.URL + "api/rankin?p=" + _currentPage.toString();
+        var response = await HttpHelper.authGet(context, null, url, {});
         if (mounted) {
           if (response != null) {
             var result = json.decode(response.body);
@@ -136,6 +127,7 @@ class _RankInPageState extends State<RankInPage> {
                         )
                       : Positioned.fill(
                           child: ListView.separated(
+                            controller: _scrollController,
                             padding: EdgeInsets.symmetric(vertical: 10),
                             itemBuilder: (BuildContext context, int index) {
                               if (index == rankList.length) {

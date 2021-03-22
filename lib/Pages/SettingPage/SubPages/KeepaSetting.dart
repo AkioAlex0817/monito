@@ -12,6 +12,10 @@ import 'package:monito/Widgets/Loading.dart';
 import 'package:monito/main.dart';
 
 class KeepaSetting extends StatefulWidget {
+  final String keepaApiKey;
+
+  KeepaSetting({Key key, @required this.keepaApiKey}) : super(key: key);
+
   @override
   _KeepaSettingState createState() => _KeepaSettingState();
 }
@@ -40,8 +44,7 @@ class _KeepaSettingState extends State<KeepaSetting> {
         }
       }
     });
-
-    Timer(Duration(milliseconds: Constants.TransitionTime), () => _getKeepaInfo());
+    keepaController.text = widget.keepaApiKey;
   }
 
   @override
@@ -49,34 +52,6 @@ class _KeepaSettingState extends State<KeepaSetting> {
     keepaController?.dispose();
     keepaNode?.dispose();
     super.dispose();
-  }
-
-  _getKeepaInfo() async {
-    try {
-      setState(() {
-        _isLoading = true;
-      });
-      String url = Constants.URL + "api/setting";
-      var response = await HttpHelper.authGet(context, null, url, {});
-      if (mounted) {
-        if (response != null) {
-          var result = json.decode(response.body);
-          if (result['result'] == "success") {
-            await _databaseProvider.insertOrUpdateSetting(memberId, result['data']['keepa_api_key'], result['data']['price_archive_percent'], result['data']['track_ranking']);
-            keepaController.text = result['data']['keepa_api_key'] == null ? "" : result['data']['keepa_api_key'];
-            setState(() {
-              _isLoading = false;
-            });
-          } else {
-            _errorHandler();
-          }
-        } else {
-          _errorHandler();
-        }
-      }
-    } catch (error) {
-      _errorHandler();
-    }
   }
 
   _save() async {
@@ -98,6 +73,7 @@ class _KeepaSettingState extends State<KeepaSetting> {
         if (result['result'] == "success") {
           await _databaseProvider.updateUserSetting(memberId, {'keepa_api_key': keepaApiKey});
           Helper.showToast(LangHelper.SUCCESS, true);
+          Navigator.pop(context, keepaApiKey);
         } else {
           Helper.showToast(LangHelper.FAILED, false);
         }
@@ -107,15 +83,6 @@ class _KeepaSettingState extends State<KeepaSetting> {
       setState(() {
         _isError = false;
         _isLoading = false;
-      });
-    }
-  }
-
-  _errorHandler() {
-    if (mounted) {
-      setState(() {
-        _isLoading = false;
-        _isError = true;
       });
     }
   }

@@ -7,6 +7,7 @@ import 'package:monito/Database/DatabaseProvider.dart';
 import 'package:monito/Helper/Constants.dart';
 import 'package:monito/Helper/Helper.dart';
 import 'package:monito/Helper/HttpHelper.dart';
+import 'package:monito/Pages/LoginPage/LoginPage.dart';
 import 'package:monito/Pages/MainPage/MainPage.dart';
 import 'package:monito/main.dart';
 import 'package:page_transition/page_transition.dart';
@@ -91,9 +92,8 @@ class _SplashPageState extends State<SplashPage> {
   }
 
   void _init() async {
+    landingDescription = "設定同期中。。。";
     deviceToken = await MyApp.firebaseMessaging.getToken();
-    print("alex");
-    print(deviceToken);
     Timer(Duration(seconds: 3), () => _nextPage());
   }
 
@@ -128,17 +128,13 @@ class _SplashPageState extends State<SplashPage> {
     await _initDB();
     String token = await MyApp.shareUtils.getString(Constants.SharePreferencesKey);
     if (token == null || token == "") {
-      isLogin = false;
-      //reset user info
-      Helper.setMemberInfo(null, null, null, null, 1, 5, 0, 0, 0, 0, false);
-      Navigator.pushAndRemoveUntil(context, PageTransition(child: MainPage(), type: PageTransitionType.fade), (route) => false);
+      Navigator.pushAndRemoveUntil(context, PageTransition(child: LoginPage(), type: PageTransitionType.fade), (route) => false);
     } else {
-      isLogin = true;
       //update user info
       setState(() {
         landingDescription = "ユーザ情報取り込み中。。。";
       });
-      String url = sprintf("%sapi/me?is_ios=%d&device_token=%s&is_test=%s", [Constants.URL, isIOS ? 1 : 0, deviceToken, isTest ? "1" : "0"]);
+      String url = sprintf("%sapi/me?is_ios=%d&device_token=%s&save_token=%s", [Constants.URL, isIOS ? 1 : 0, deviceToken, isTest ? "0" : "1"]);
       var response = await HttpHelper.authGet(context, null, url, {});
       if (mounted) {
         if (response != null) {

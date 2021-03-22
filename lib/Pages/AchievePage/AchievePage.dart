@@ -120,6 +120,7 @@ class _AchievePageState extends State<AchievePage> {
                         )
                       : Positioned.fill(
                           child: ListView.separated(
+                            controller: _scrollController,
                             padding: EdgeInsets.symmetric(vertical: 10),
                             itemBuilder: (BuildContext context, int index) {
                               if (index == achieveList.length) {

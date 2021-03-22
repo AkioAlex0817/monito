@@ -91,7 +91,7 @@ class RankListItem extends StatelessWidget {
                       Container(
                         width: double.infinity,
                         alignment: Alignment.centerRight,
-                        child: Text(Helper.formatDate(DateTime.parse(rankModel.rankin_at), 'yyyy-MM-dd'), style: TextStyle(color: Colors.black, fontSize: 12, fontWeight: FontWeight.bold)),
+                        child: Text(Helper.formatDate(DateTime.parse(rankModel.ranked_at), 'yyyy-MM-dd'), style: TextStyle(color: Colors.black, fontSize: 12, fontWeight: FontWeight.bold)),
                       )
                     ],
                   ),

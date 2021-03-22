@@ -32,64 +32,56 @@ class _RankDetailPageState extends State<RankDetailPage> {
   bool _isLoading = false;
 
   _addFavorite() async {
-    if (isLogin) {
-      if (_isLoading) return;
-      setState(() {
-        _isLoading = true;
-      });
-      String url = Constants.URL + "api/wishlist";
-      var response = await HttpHelper.authPost(context, url, {'asin': widget.rankModel.asin}, {}, false);
-      if (mounted) {
-        if (response != null) {
-          var result = json.decode(response.body);
-          if (result['result'] == "success") {
-            setState(() {
-              _isLoading = false;
-              widget.rankModel.isFavorite = true;
-            });
-            Helper.showToast(LangHelper.SUCCESS, true);
-          } else {
-            if ((result['code'] is int ? result['code'] : int.parse(result['code'])) == 406) {
-              _errorHandler(message: "Your wishlist is limited");
-            } else {
-              _errorHandler();
-            }
-          }
+    if (_isLoading) return;
+    setState(() {
+      _isLoading = true;
+    });
+    String url = Constants.URL + "api/wishlist";
+    var response = await HttpHelper.authPost(context, url, {'asin': widget.rankModel.asin}, {}, false);
+    if (mounted) {
+      if (response != null) {
+        var result = json.decode(response.body);
+        if (result['result'] == "success") {
+          setState(() {
+            _isLoading = false;
+            widget.rankModel.isFavorite = true;
+          });
+          Helper.showToast(LangHelper.SUCCESS, true);
         } else {
-          _errorHandler();
+          if ((result['code'] is int ? result['code'] : int.parse(result['code'])) == 406) {
+            _errorHandler(message: "Your wishlist is limited");
+          } else {
+            _errorHandler();
+          }
         }
+      } else {
+        _errorHandler();
       }
-    } else {
-      Navigator.push(context, PageTransition(type: PageTransitionType.rightToLeft, child: LoginPage(), inheritTheme: true, curve: Curves.easeIn, ctx: context));
     }
   }
 
   _removeFavorite() async {
-    if (isLogin) {
-      if (_isLoading) return;
-      setState(() {
-        _isLoading = true;
-      });
-      String url = Constants.URL + "api/wishlist?asin=" + widget.rankModel.asin;
-      var response = await HttpHelper.authDelete(url, {});
-      if (mounted) {
-        if (response != null) {
-          var result = json.decode(response.body);
-          if (result['result'] == "success") {
-            setState(() {
-              _isLoading = false;
-              widget.rankModel.isFavorite = false;
-            });
-            Helper.showToast(LangHelper.SUCCESS, true);
-          } else {
-            _errorHandler();
-          }
+    if (_isLoading) return;
+    setState(() {
+      _isLoading = true;
+    });
+    String url = Constants.URL + "api/wishlist?asin=" + widget.rankModel.asin;
+    var response = await HttpHelper.authDelete(url, {});
+    if (mounted) {
+      if (response != null) {
+        var result = json.decode(response.body);
+        if (result['result'] == "success") {
+          setState(() {
+            _isLoading = false;
+            widget.rankModel.isFavorite = false;
+          });
+          Helper.showToast(LangHelper.SUCCESS, true);
         } else {
           _errorHandler();
         }
+      } else {
+        _errorHandler();
       }
-    } else {
-      Navigator.push(context, PageTransition(type: PageTransitionType.rightToLeft, child: LoginPage(), inheritTheme: true, curve: Curves.easeIn, ctx: context));
     }
   }
 
@@ -216,7 +208,7 @@ class _RankDetailPageState extends State<RankDetailPage> {
                                                     style: TextStyle(color: Colors.black54, fontSize: 12, fontWeight: FontWeight.bold),
                                                   ),
                                                   Text(
-                                                    Helper.formatDate(DateTime.parse(widget.rankModel.rankin_at), 'yyyy-MM-dd'),
+                                                    Helper.formatDate(DateTime.parse(widget.rankModel.ranked_at), 'yyyy-MM-dd'),
                                                     style: TextStyle(color: Colors.red, fontSize: 12, fontWeight: FontWeight.bold),
                                                   )
                                                 ],

@@ -72,35 +72,26 @@ class _TrackCategorySettingState extends State<TrackCategorySetting> {
   }
 
   _getUserCategory() async {
-    if (isLogin) {
-      String url = Constants.URL + "api/setting";
-      HttpHelper.authGet(context, null, url, {}).then((response) {
-        if (mounted) {
-          if (response != null) {
-            var result = json.decode(response.body);
-            if (result['result'] == "success") {
-              for (var item in result['data']['track_categories']) {
-                selectedCategory.add(item);
-                _selectedCount++;
-              }
-              _readyUserCategory = true;
-              _checkInit();
-            } else {
-              _errorHandler();
+    String url = Constants.URL + "api/setting";
+    HttpHelper.authGet(context, null, url, {}).then((response) {
+      if (mounted) {
+        if (response != null) {
+          var result = json.decode(response.body);
+          if (result['result'] == "success") {
+            for (var item in result['data']['track_categories']) {
+              selectedCategory.add(item);
+              _selectedCount++;
             }
+            _readyUserCategory = true;
+            _checkInit();
           } else {
             _errorHandler();
           }
+        } else {
+          _errorHandler();
         }
-      });
-    } else {
-      String unAuthCategory = await MyApp.shareUtils.getString(Constants.UnAuthTrackCategoryKey);
-      if (unAuthCategory != null && unAuthCategory != "") {
-        selectedCategory.add(unAuthCategory);
-        _selectedCount = 1;
       }
-      _readyUserCategory = true;
-    }
+    });
   }
 
   _errorHandler() {
@@ -126,38 +117,34 @@ class _TrackCategorySettingState extends State<TrackCategorySetting> {
   _saveCategory() async {
     if (_isLoading) return;
     if (selectedCategory.isEmpty) return;
-    if (isLogin) {
-      setState(() {
-        _isError = false;
-        _isLoading = true;
-      });
+    setState(() {
+      _isError = false;
+      _isLoading = true;
+    });
 
-      String url = Constants.URL + "api/setting/track_categories";
-      var response = await HttpHelper.authPost(context, url, {'value': selectedCategory.join(",")}, {}, false);
-      if (mounted) {
-        if (response != null) {
-          var result = json.decode(response.body);
-          if (result['result'] == "success") {
-            setState(() {
-              _isLoading = false;
-            });
-            Helper.showToast(LangHelper.SUCCESS, true);
-          } else {
-            setState(() {
-              _isLoading = false;
-            });
-            Helper.showToast(LangHelper.FAILED, false);
-          }
+    String url = Constants.URL + "api/setting/track_categories";
+    var response = await HttpHelper.authPost(context, url, {'value': selectedCategory.join(",")}, {}, false);
+    if (mounted) {
+      if (response != null) {
+        var result = json.decode(response.body);
+        if (result['result'] == "success") {
+          setState(() {
+            _isLoading = false;
+          });
+          Helper.showToast(LangHelper.SUCCESS, true);
+          Navigator.pop(context, selectedCategory);
         } else {
           setState(() {
             _isLoading = false;
           });
           Helper.showToast(LangHelper.FAILED, false);
         }
+      } else {
+        setState(() {
+          _isLoading = false;
+        });
+        Helper.showToast(LangHelper.FAILED, false);
       }
-    } else {
-      await MyApp.shareUtils.setString(Constants.UnAuthTrackCategoryKey, selectedCategory.first);
-      Helper.showToast(LangHelper.SUCCESS, true);
     }
   }
 

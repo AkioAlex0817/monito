@@ -31,6 +31,8 @@ class _OnlineSettingPageState extends State<OnlineSettingPage> {
   bool _saveRankingLoading = false;
   int achievePercent = 0;
   int tracking = 0;
+  String keepaToken = "";
+  List<String> selectedCategory = [];
 
   List<Rank> ranks = [
     new Rank("", 0),
@@ -63,6 +65,10 @@ class _OnlineSettingPageState extends State<OnlineSettingPage> {
             await _databaseProvider.insertOrUpdateSetting(memberId, result['data']['keepa_api_key'], result['data']['price_archive_percent'], result['data']['track_ranking']);
             achievePercent = result['data']['price_archive_percent'];
             tracking = result['data']['track_ranking'];
+            keepaToken = result['data']['keepa_api_key'] == null ? "" : result['data']['keepa_api_key'];
+            for (var item in result['data']['track_categories']) {
+              selectedCategory.add(item);
+            }
             setState(() {
               _isLoading = false;
             });
@@ -171,18 +177,55 @@ class _OnlineSettingPageState extends State<OnlineSettingPage> {
                               onPressed: () {
                                 Navigator.push(
                                   context,
-                                  PageTransition(child: KeepaSetting(), type: PageTransitionType.rightToLeft, duration: Duration(milliseconds: Constants.TransitionTime), reverseDuration: Duration(milliseconds: Constants.TransitionTime), curve: Curves.easeIn, ctx: context, inheritTheme: true),
-                                );
+                                  PageTransition(
+                                      child: KeepaSetting(
+                                        keepaApiKey: keepaToken,
+                                      ),
+                                      type: PageTransitionType.rightToLeft,
+                                      duration: Duration(milliseconds: Constants.TransitionTime),
+                                      reverseDuration: Duration(milliseconds: Constants.TransitionTime),
+                                      curve: Curves.easeIn,
+                                      ctx: context,
+                                      inheritTheme: true),
+                                ).then((value) {
+                                  if (mounted) {
+                                    if (value != null && value != "") {
+                                      setState(() {
+                                        this.keepaToken = value;
+                                      });
+                                    }
+                                  }
+                                });
                               },
+                              icon: SizedBox(
+                                width: 100,
+                                child: Text(
+                                  keepaToken == "" ? "未設定" : keepaToken,
+                                  overflow: TextOverflow.ellipsis,
+                                  textAlign: TextAlign.end,
+                                  style: TextStyle(color: Colors.red, fontSize: 15, fontWeight: FontWeight.bold),
+                                ),
+                              ),
                             ),
                             SettingListItem(
                               menuTitle: "カテゴリ",
                               onPressed: () {
                                 Navigator.push(
-                                    context,
-                                    PageTransition(
-                                        child: TrackCategorySetting(), type: PageTransitionType.rightToLeft, duration: Duration(milliseconds: Constants.TransitionTime), reverseDuration: Duration(milliseconds: Constants.TransitionTime), curve: Curves.easeIn, ctx: context, inheritTheme: true));
+                                  context,
+                                  PageTransition(
+                                      child: TrackCategorySetting(), type: PageTransitionType.rightToLeft, duration: Duration(milliseconds: Constants.TransitionTime), reverseDuration: Duration(milliseconds: Constants.TransitionTime), curve: Curves.easeIn, ctx: context, inheritTheme: true),
+                                ).then((value) {
+                                  if (value != null) {
+                                    setState(() {
+                                      selectedCategory = value;
+                                    });
+                                  }
+                                });
                               },
+                              icon: Text(
+                                selectedCategory.length == 0 ? "未設定" : "${selectedCategory.length}件",
+                                style: TextStyle(color: Colors.red, fontSize: 15, fontWeight: FontWeight.bold),
+                              ),
                             ),
                             SettingListItem(
                               menuTitle: "指定範囲",
@@ -193,7 +236,7 @@ class _OnlineSettingPageState extends State<OnlineSettingPage> {
                                   ? SpinKitDualRing(color: Colors.black, size: 20, lineWidth: 2)
                                   : Text(
                                       ranks.firstWhere((element) => element.value == tracking).show,
-                                      style: TextStyle(color: Colors.black, fontSize: 15, fontWeight: FontWeight.bold),
+                                      style: TextStyle(color: Colors.red, fontSize: 15, fontWeight: FontWeight.bold),
                                     ),
                             ),
                             SettingListItem(
@@ -214,8 +257,8 @@ class _OnlineSettingPageState extends State<OnlineSettingPage> {
                                 });
                               },
                               icon: Text(
-                                achievePercent.toString(),
-                                style: TextStyle(color: Colors.black, fontSize: 15, fontWeight: FontWeight.bold),
+                                achievePercent.toString() + "%",
+                                style: TextStyle(color: Colors.red, fontSize: 15, fontWeight: FontWeight.bold),
                               ),
                             ),
                             SettingListItem(
@@ -237,7 +280,13 @@ class _OnlineSettingPageState extends State<OnlineSettingPage> {
                         ),
                       ),
                     ),
-              _isLoading ? Positioned.fill(child: Loading()) : Container()
+              _isLoading
+                  ? Positioned.fill(
+                      child: Loading(
+                      opacity: 1,
+                      background: Colors.white,
+                    ))
+                  : Container()
             ],
           ),
         ),

@@ -7,9 +7,11 @@ import 'package:monito/Helper/Constants.dart';
 import 'package:monito/Helper/Helper.dart';
 import 'package:monito/Helper/HttpHelper.dart';
 import 'package:monito/Helper/IntExtensions.dart';
+import 'package:monito/Pages/MainPage/MainPage.dart';
 import 'package:monito/Pages/OptCodePage/Widgets/PinEntryTextField.dart';
 import 'package:monito/Widgets/Loading.dart';
 import 'package:monito/main.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:sprintf/sprintf.dart';
 
 class OptCodePage extends StatefulWidget {
@@ -44,15 +46,16 @@ class _OptCodePageState extends State<OptCodePage> {
     const oneSec = const Duration(seconds: 1);
     _timer = new Timer.periodic(
       oneSec,
-      (Timer timer) => setState(
-        () {
-          if (_start < 1) {
-            timer.cancel();
-          } else {
-            _start = _start - 1;
-          }
-        },
-      ),
+          (Timer timer) =>
+          setState(
+                () {
+              if (_start < 1) {
+                timer.cancel();
+              } else {
+                _start = _start - 1;
+              }
+            },
+          ),
     );
   }
 
@@ -73,17 +76,14 @@ class _OptCodePageState extends State<OptCodePage> {
           }
           _start = 180;
           startTimer();
+          setState(() {
+            _isLoading = false;
+          });
         } else {
-          Helper.showToast(result['message'], false);
+          _errorHandler(result['message']);
         }
-        setState(() {
-          _isLoading = false;
-        });
       } else {
-        setState(() {
-          _isLoading = false;
-        });
-        Helper.showToast("未知エラー:サーバ通信中にエラーが出ました。", false);
+        _errorHandler("未知エラー:サーバ通信中にエラーが出ました。");
       }
     }
   }
@@ -101,64 +101,76 @@ class _OptCodePageState extends State<OptCodePage> {
         if (result['result'] == "success") {
           _successSignIn(result['data']);
         } else {
-          setState(() {
-            _isLoading = false;
-          });
-          this.pinEntryTextFieldKey.currentState.clearTextFields();
-          Helper.showToast(result['message'], false);
+          _errorHandler(result['message']);
         }
       } else {
-        setState(() {
-          _isLoading = false;
-        });
-        this.pinEntryTextFieldKey.currentState.clearTextFields();
-        Helper.showToast("未知エラー:サーバ通信中にエラーが出ました。", false);
+        _errorHandler("未知エラー:サーバ通信中にエラーが出ました。");
       }
     }
   }
 
   Future<void> _successSignIn(Map<String, dynamic> body) async {
-    isLogin = true;
     await MyApp.shareUtils.setString(Constants.SharePreferencesKey, json.encode(body));
     //Get user info
-    String url = sprintf("%sapi/me?is_ios=%d&device_token=%s&is_test=%s", [Constants.URL, isIOS ? 1 : 0, deviceToken, isTest ? "1" : "0"]);
+    String url = sprintf("%sapi/me?is_ios=%d&device_token=%s&save_token=%s", [Constants.URL, isIOS ? 1 : 0, deviceToken, isTest ? "0" : "1"]);
     var response = await HttpHelper.authGet(context, null, url, {});
-    if (mounted && response != null) {
-      var result = json.decode(response.body);
-      if (result['result'] == "success") {
-        var data = result['data'];
-        //init user limitation
-        Helper.setMemberInfo(
-          data['current_plan'],
-          data['profile']['id'],
-          data['profile']['name'],
-          data['profile']['email'],
-          data['limitation']['tracker'],
-          data['limitation']['deals'],
-          data['limitation']['achievelist'] is int ? data['limitation']['achievelist'] : 0,
-          data['limitation']['wishlist'] is int ? data['limitation']['wishlist'] : 0,
-          data['limitation']['purchasinglist'] is int ? data['limitation']['purchasinglist'] : 0,
-          data['limitation']['purchasedlist'] is int ? data['limitation']['purchasedlist'] : 0,
-          data['limitation']['rdb'],
-        );
-        //sync suppliers name
-        for (var item in data['suppliers']) {
-          await _databaseProvider.insertOrUpdateSupplier(item['id'], item['name']);
+    if (mounted) {
+      if (response != null) {
+        var result = json.decode(response.body);
+        if (result['result'] == 'success') {
+          var data = result['data'];
+          //init user limitation
+          Helper.setMemberInfo(
+            data['current_plan'],
+            data['profile']['id'],
+            data['profile']['name'],
+            data['profile']['email'],
+            data['limitation']['tracker'],
+            data['limitation']['deals'],
+            data['limitation']['achievelist'] is int ? data['limitation']['achievelist'] : 0,
+            data['limitation']['wishlist'] is int ? data['limitation']['wishlist'] : 0,
+            data['limitation']['purchasinglist'] is int ? data['limitation']['purchasinglist'] : 0,
+            data['limitation']['purchasedlist'] is int ? data['limitation']['purchasedlist'] : 0,
+            data['limitation']['rdb'],
+          );
+          //sync suppliers name
+          for (var item in data['suppliers']) {
+            await _databaseProvider.insertOrUpdateSupplier(item['id'], item['name']);
+          }
+          //update user setting
+          await _databaseProvider.insertOrUpdateSetting(memberId, data['user_settings']['keepa_api_key'], data['user_settings']['price_archive_percent'], data['user_settings']['track_ranking']);
+          Navigator.pushAndRemoveUntil(context, PageTransition(child: MainPage(), type: PageTransitionType.fade), (route) => false);
+        } else {
+          _errorHandler("Failed user info sync work");
         }
-        //update user setting
-        await _databaseProvider.insertOrUpdateSetting(memberId, data['user_settings']['keepa_api_key'], data['user_settings']['price_archive_percent'], data['user_settings']['track_ranking']);
+      } else {
+        _errorHandler("Failed user info sync work");
       }
     }
+  }
 
-    if (Navigator.canPop(context)) {
-      Navigator.pop(context);
+  _errorHandler(String message) {
+    if (mounted) {
+      setState(() {
+        _isLoading = false;
+      });
+      if(this.pinEntryTextFieldKey.currentState.mounted){
+        this.pinEntryTextFieldKey.currentState.clearTextFields();
+      }
+      Helper.showToast(message, false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    var width = MediaQuery.of(context).size.width;
-    var height = MediaQuery.of(context).size.height;
+    var width = MediaQuery
+        .of(context)
+        .size
+        .width;
+    var height = MediaQuery
+        .of(context)
+        .size
+        .height;
     return Scaffold(
       backgroundColor: Constants.BackgroundColor,
       body: SafeArea(
@@ -197,15 +209,15 @@ class _OptCodePageState extends State<OptCodePage> {
                         alignment: Alignment.center,
                         child: _start == 0
                             ? InkWell(
-                                onTap: () {
-                                  _resendOptCode();
-                                },
-                                child: Text("再送信", style: TextStyle(color: Colors.blue, fontSize: 16)),
-                              )
+                          onTap: () {
+                            _resendOptCode();
+                          },
+                          child: Text("再送信", style: TextStyle(color: Colors.blue, fontSize: 16)),
+                        )
                             : Text(
-                                "再送信まで$_start秒",
-                                style: TextStyle(color: Colors.red, fontSize: 16),
-                              ),
+                          "再送信まで$_start秒",
+                          style: TextStyle(color: Colors.red, fontSize: 16),
+                        ),
                       )
                     ],
                   ),
@@ -237,8 +249,8 @@ class _OptCodePageState extends State<OptCodePage> {
             ),
             _isLoading
                 ? Positioned.fill(
-                    child: Loading(),
-                  )
+              child: Loading(),
+            )
                 : Container()
           ],
         ),
