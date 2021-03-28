@@ -1,3 +1,4 @@
+import 'package:badges/badges.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -18,8 +19,8 @@ class RankListItem extends StatelessWidget {
     return Container(
       margin: EdgeInsets.symmetric(horizontal: 10),
       decoration: BoxDecoration(
-        color: Colors.white,
         shape: BoxShape.rectangle,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(10),
         boxShadow: [
           BoxShadow(color: Colors.black26, blurRadius: 5.0, offset: const Offset(0.0, 5.0)),
@@ -40,16 +41,37 @@ class RankListItem extends StatelessWidget {
                   height: 90,
                   decoration: BoxDecoration(border: Border.all(color: Colors.black12, width: 1, style: BorderStyle.solid), borderRadius: BorderRadius.circular(10), color: Colors.white),
                   padding: EdgeInsets.all(3),
-                  child: AspectRatio(
-                    aspectRatio: 1,
-                    child: Hero(
-                      tag: 'rank_image_' + rankModel.asin,
-                      child: CachedNetworkImage(
-                        placeholder: (context, url) => CupertinoActivityIndicator(radius: 10),
-                        errorWidget: (context, url, error) => Icon(Icons.error, color: Colors.red),
-                        imageUrl: Helper.imageURL(rankModel.photo),
+                  child: Stack(
+                    children: [
+                      Positioned.fill(
+                        child: AspectRatio(
+                          aspectRatio: 1,
+                          child: Hero(
+                            tag: 'rank_image_' + rankModel.asin,
+                            child: CachedNetworkImage(
+                              placeholder: (context, url) => CupertinoActivityIndicator(radius: 10),
+                              errorWidget: (context, url, error) => Icon(Icons.error, color: Colors.red),
+                              imageUrl: Helper.imageURL(rankModel.photo),
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
+                      Positioned(
+                        left: 0,
+                        top: 0,
+                        child: rankModel.acknowledged_at == null
+                            ? Badge(
+                                shape: BadgeShape.square,
+                                borderRadius: BorderRadius.circular(5),
+                                padding: EdgeInsets.all(2),
+                                badgeContent: Text(
+                                  "NEW",
+                                  style: TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                                ),
+                              )
+                            : Container(),
+                      )
+                    ],
                   ),
                 ),
                 10.width,

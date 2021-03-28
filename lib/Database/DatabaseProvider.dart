@@ -31,19 +31,15 @@ class DatabaseProvider {
           "user_id INTEGER(11) PRIMARY KEY NOT NULL, "
           "keepa_api_key TEXT(255), "
           "price_archive_percent INTEGER(11), "
-          "track_ranking INTEGER(11)"
+          "track_ranking INTEGER(11), "
+          "low_ranking_range INTEGER(11)"
           ")");
     });
   }
 
-  Future<bool> insertOrUpdateSetting(int user_id, String keepa_api_key, int price_archive_percent, int track_ranking) async {
+  Future<bool> insertOrUpdateSetting(int user_id, String keepa_api_key, int price_archive_percent, int track_ranking, int low_ranking_range) async {
     final Database db = await database;
-    Map<String, dynamic> item = {
-      'user_id': user_id,
-      'keepa_api_key': keepa_api_key,
-      'price_archive_percent': price_archive_percent,
-      'track_ranking': track_ranking,
-    };
+    Map<String, dynamic> item = {'user_id': user_id, 'keepa_api_key': keepa_api_key, 'price_archive_percent': price_archive_percent, 'track_ranking': track_ranking, 'low_ranking_range': low_ranking_range};
     try {
       await db.insert("user_settings", item, conflictAlgorithm: ConflictAlgorithm.replace);
     } catch (error) {

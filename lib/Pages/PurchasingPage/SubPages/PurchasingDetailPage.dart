@@ -1,19 +1,15 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:monito/Database/DatabaseProvider.dart';
 import 'package:monito/Helper/Constants.dart';
 import 'package:monito/Helper/Helper.dart';
-import 'package:monito/Helper/LangHelper.dart';
 import 'package:monito/Pages/PublishPage/PublishPage.dart';
 import 'package:monito/Pages/PurchasingPage/Model/PurchasingModel.dart';
-import 'package:monito/Pages/SettingPage/SubPages/SuppliersSetting.dart';
 import 'package:monito/Pages/WebPages/WebPage.dart';
 import 'package:monito/Widgets/LabelWidget.dart';
 import 'package:monito/Widgets/LoadingButton.dart';
 import 'package:monito/Widgets/ZoomOverlayWidget.dart';
 import 'package:monito/Helper/IntExtensions.dart';
-import 'package:monito/main.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:sprintf/sprintf.dart';
 
@@ -27,17 +23,10 @@ class PurchasingDetailPage extends StatefulWidget {
 }
 
 class _PurchasingDetailPageState extends State<PurchasingDetailPage> {
-  final DatabaseProvider _databaseProvider = DatabaseProvider.db;
   bool _draggableContentWidget = false;
 
   _publishHandler() async {
     //check suppliers info
-    var suppliers = await _databaseProvider.getAllSuppliers();
-    if (suppliers.length == 0) {
-      _supplierErrorHandler();
-      return;
-    }
-
     Navigator.push(
         context,
         PageTransition(
@@ -49,41 +38,6 @@ class _PurchasingDetailPageState extends State<PurchasingDetailPage> {
           duration: Duration(milliseconds: Constants.TransitionTime),
           reverseDuration: Duration(milliseconds: Constants.TransitionTime),
         ));
-  }
-
-  _supplierErrorHandler() {
-    showCupertinoDialog(
-      context: context,
-      builder: (context) {
-        return CupertinoAlertDialog(
-          title: Text("仕入れ先情報が登録されていません。"),
-          actions: [
-            CupertinoDialogAction(
-              isDefaultAction: true,
-              child: Text(LangHelper.YES),
-              onPressed: () async {
-                Navigator.of(context).pop("Discard");
-                Navigator.push(
-                  context,
-                  PageTransition(child: SuppliersSetting(), type: PageTransitionType.rightToLeft, duration: Duration(milliseconds: Constants.TransitionTime), reverseDuration: Duration(milliseconds: Constants.TransitionTime), inheritTheme: true, ctx: context, curve: Curves.easeIn),
-                ).then((value) {
-                  if (mounted) {
-                    _publishHandler();
-                  }
-                });
-              },
-            ),
-            CupertinoDialogAction(
-              child: Text(LangHelper.NO),
-              isDestructiveAction: true,
-              onPressed: () {
-                Navigator.of(context).pop("Discard");
-              },
-            )
-          ],
-        );
-      },
-    );
   }
 
   @override

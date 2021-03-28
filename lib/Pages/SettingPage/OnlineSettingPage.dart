@@ -8,6 +8,7 @@ import 'package:monito/Helper/Constants.dart';
 import 'package:monito/Helper/Helper.dart';
 import 'package:monito/Helper/HttpHelper.dart';
 import 'package:monito/Helper/LangHelper.dart';
+import 'package:monito/Pages/SettingPage/Model/LowRankingRange.dart';
 import 'package:monito/Pages/SettingPage/Widgets/TrackArchivePercentDialog.dart';
 import 'package:monito/Widgets/Loading.dart';
 import 'package:monito/main.dart';
@@ -15,7 +16,6 @@ import 'package:page_transition/page_transition.dart';
 
 import 'Model/Rank.dart';
 import 'SubPages/KeepaSetting.dart';
-import 'SubPages/SuppliersSetting.dart';
 import 'SubPages/TrackCategorySetting.dart';
 import 'Widgets/SettingListItem.dart';
 
@@ -29,6 +29,8 @@ class _OnlineSettingPageState extends State<OnlineSettingPage> {
   bool _isLoading = false;
   bool _isError = false;
   bool _saveRankingLoading = false;
+  bool _saveLowRankingRangeLoading = false;
+  int lowRankingRange = 0;
   int achievePercent = 0;
   int tracking = 0;
   String keepaToken = "";
@@ -42,6 +44,20 @@ class _OnlineSettingPageState extends State<OnlineSettingPage> {
     new Rank("2000", 4),
     new Rank("2500", 5),
     new Rank("3000", 6),
+  ];
+
+  List<LowRankingRange> rankingRanges = [
+    new LowRankingRange("指定なし", 0),
+    new LowRankingRange("1000以下", 1000),
+    new LowRankingRange("2000以下", 2000),
+    new LowRankingRange("3000以下", 3000),
+    new LowRankingRange("4000以下", 4000),
+    new LowRankingRange("5000以下", 5000),
+    new LowRankingRange("6000以下", 6000),
+    new LowRankingRange("7000以下", 7000),
+    new LowRankingRange("8000以下", 8000),
+    new LowRankingRange("9000以下", 9000),
+    new LowRankingRange("10000以下", 10000),
   ];
 
   @override
@@ -62,9 +78,10 @@ class _OnlineSettingPageState extends State<OnlineSettingPage> {
         if (response != null) {
           var result = json.decode(response.body);
           if (result['result'] == "success") {
-            await _databaseProvider.insertOrUpdateSetting(memberId, result['data']['keepa_api_key'], result['data']['price_archive_percent'], result['data']['track_ranking']);
+            await _databaseProvider.insertOrUpdateSetting(memberId, result['data']['keepa_api_key'], result['data']['price_archive_percent'], result['data']['track_ranking'], result['data']['low_ranking_range']);
             achievePercent = result['data']['price_archive_percent'];
             tracking = result['data']['track_ranking'];
+            lowRankingRange = result['data']['low_ranking_range'];
             keepaToken = result['data']['keepa_api_key'] == null ? "" : result['data']['keepa_api_key'];
             for (var item in result['data']['track_categories']) {
               selectedCategory.add(item);
@@ -119,6 +136,32 @@ class _OnlineSettingPageState extends State<OnlineSettingPage> {
     }
   }
 
+  _saveLowRankingRange() async {
+    if (_saveLowRankingRangeLoading) return;
+    setState(() {
+      _saveLowRankingRangeLoading = true;
+    });
+
+    String url = Constants.URL + "api/setting/low_ranking_range";
+    var response = await HttpHelper.authPost(context, url, {'value': lowRankingRange.toString()}, {}, false);
+    if (mounted) {
+      if (response != null) {
+        var result = json.decode(response.body);
+        if (result['result'] == "success") {
+          await _databaseProvider.updateUserSetting(memberId, {'low_ranking_range': lowRankingRange});
+          Helper.showToast(LangHelper.SUCCESS, true);
+        } else {
+          Helper.showToast(LangHelper.FAILED, false);
+        }
+      } else {
+        Helper.showToast(LangHelper.FAILED, false);
+      }
+      setState(() {
+        _saveLowRankingRangeLoading = false;
+      });
+    }
+  }
+
   List<Widget> actionSheetButton() {
     List<Widget> result = [];
     for (Rank item in ranks) {
@@ -137,10 +180,45 @@ class _OnlineSettingPageState extends State<OnlineSettingPage> {
     return result;
   }
 
+  List<Widget> lowRankingRangeSheetButton() {
+    List<Widget> result = [];
+    for (LowRankingRange item in rankingRanges) {
+      result.add(CupertinoActionSheetAction(
+        onPressed: () {
+          setState(() {
+            lowRankingRange = item.value;
+          });
+          _saveLowRankingRange();
+          Navigator.pop(context);
+        },
+        child: Text(item.show),
+      ));
+    }
+    List<Widget> res = [];
+    res.add(SizedBox(
+      height: 400,
+      child: SingleChildScrollView(
+        child: Column(
+          children: result,
+        ),
+      ),
+    ));
+    return res;
+  }
+
   @override
   Widget build(BuildContext context) {
     final selectRankHandler = CupertinoActionSheet(
       actions: actionSheetButton(),
+      cancelButton: CupertinoActionSheetAction(
+        onPressed: () {
+          Navigator.pop(context);
+        },
+        child: Text("キャンセル"),
+      ),
+    );
+    final selectLowRankingRangeHandler = CupertinoActionSheet(
+      actions: lowRankingRangeSheetButton(),
       cancelButton: CupertinoActionSheetAction(
         onPressed: () {
           Navigator.pop(context);
@@ -240,6 +318,18 @@ class _OnlineSettingPageState extends State<OnlineSettingPage> {
                                     ),
                             ),
                             SettingListItem(
+                              menuTitle: "下位ランキング範囲",
+                              onPressed: () {
+                                showCupertinoModalPopup(context: context, builder: (BuildContext context) => selectLowRankingRangeHandler);
+                              },
+                              icon: _saveLowRankingRangeLoading
+                                  ? SpinKitDualRing(color: Colors.black, size: 20, lineWidth: 2)
+                                  : Text(
+                                      rankingRanges.firstWhere((element) => element.value == lowRankingRange).show,
+                                      style: TextStyle(color: Colors.red, fontSize: 15, fontWeight: FontWeight.bold),
+                                    ),
+                            ),
+                            SettingListItem(
                               menuTitle: "上昇率(%)",
                               onPressed: () {
                                 showDialog(
@@ -260,13 +350,6 @@ class _OnlineSettingPageState extends State<OnlineSettingPage> {
                                 achievePercent.toString() + "%",
                                 style: TextStyle(color: Colors.red, fontSize: 15, fontWeight: FontWeight.bold),
                               ),
-                            ),
-                            SettingListItem(
-                              menuTitle: "仕入れ先リスト",
-                              onPressed: () {
-                                Navigator.push(context,
-                                    PageTransition(child: SuppliersSetting(), type: PageTransitionType.rightToLeft, duration: Duration(milliseconds: Constants.TransitionTime), reverseDuration: Duration(milliseconds: Constants.TransitionTime), curve: Curves.easeIn, ctx: context, inheritTheme: true));
-                              },
                             ),
                             SettingListItem(
                               menuTitle: "アプリ情報",

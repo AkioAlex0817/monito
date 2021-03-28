@@ -82,10 +82,10 @@ class _PublishPageState extends State<PublishPage> {
       Helper.showToast("仕入れ価格を入力してください。", false);
       return;
     }
-    if (currentSupplier == 0) {
+    /*if (currentSupplier == 0) {
       Helper.showToast("仕入れ先を選択してください。", false);
       return;
-    }
+    }*/
 
     setState(() {
       _isLoading = true;

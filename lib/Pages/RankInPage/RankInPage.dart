@@ -145,7 +145,9 @@ class _RankInPageState extends State<RankInPage> {
                               return RankListItem(
                                   rankModel: rankList[index],
                                   onPressed: () {
-                                    Navigator.push(context, PageTransition(type: PageTransitionType.fade, child: RankDetailPage(rankModel: rankList[index]), inheritTheme: true, curve: Curves.easeIn, ctx: context));
+                                    Navigator.push(context, PageTransition(type: PageTransitionType.fade, child: RankDetailPage(rankModel: rankList[index]), inheritTheme: true, curve: Curves.easeIn, ctx: context)).then((value) {
+                                      setState(() {});
+                                    });
                                   });
                             },
                             separatorBuilder: (context, index) => Divider(color: Colors.transparent),

@@ -8,3 +8,7 @@ extension IntExtensions on int {
 
   String get formatter => this == -1 ? "-- " : currency.format(this);
 }
+
+extension StringExtensions on String {
+  String get check => this == null ? "" : this;
+}

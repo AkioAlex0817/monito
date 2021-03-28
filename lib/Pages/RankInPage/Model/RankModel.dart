@@ -27,7 +27,7 @@ class RankModel {
       this.created_at, this.updated_at, this.last_update, this.isFavorite, this.category_name);
 
   RankModel.fromJson(Map<String, dynamic> json) {
-    id = json['cat_id'];
+    id = json['id'];
     cat_id = json['cat_id'].toString();
     asin = json['asin'];
     jan = json['jan'];

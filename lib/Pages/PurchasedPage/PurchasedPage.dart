@@ -71,7 +71,7 @@ class _PurchasedPageState extends State<PurchasedPage> {
               _hasNextPage = _currentPage <= result['data']['last_page'];
               for (var item in result['data']['data']) {
                 item['category_name'] = categories.firstWhere((element) => element['cat_id'] == item['cat_id'].toString())['name'];
-                item['supplier_name'] = suppliers.firstWhere((element) => element['id'] == item['supplier'])['name'];
+                item['supplier_name'] = item['supplier'] == null || item['supplier'] == 0 ? "--" : suppliers.firstWhere((element) => element['id'] == item['supplier'])['name'];
                 lists.add(PurchasedModel.fromJson(item));
               }
               if (!_isInit) {

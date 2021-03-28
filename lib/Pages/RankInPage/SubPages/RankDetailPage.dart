@@ -3,18 +3,18 @@ import 'dart:convert';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:monito/Helper/Constants.dart';
 import 'package:monito/Helper/Helper.dart';
 import 'package:monito/Helper/HttpHelper.dart';
 import 'package:monito/Helper/LangHelper.dart';
-import 'package:monito/Pages/LoginPage/LoginPage.dart';
 import 'package:monito/Pages/RankInPage/Model/RankModel.dart';
 import 'package:monito/Pages/WebPages/WebPage.dart';
 import 'package:monito/Widgets/LabelWidget.dart';
 import 'package:monito/Widgets/LoadingButton.dart';
+import 'package:monito/Widgets/RoundLabel.dart';
 import 'package:monito/Widgets/ZoomOverlayWidget.dart';
 import 'package:monito/Helper/IntExtensions.dart';
-import 'package:monito/main.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:sprintf/sprintf.dart';
 
@@ -30,6 +30,37 @@ class RankDetailPage extends StatefulWidget {
 class _RankDetailPageState extends State<RankDetailPage> {
   bool _draggableContentWidget = false;
   bool _isLoading = false;
+  bool acknowledged = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.rankModel.acknowledged_at == null) {
+      _syncAcknowledged();
+    }
+  }
+
+  _syncAcknowledged() async {
+    if (acknowledged) return;
+    setState(() {
+      acknowledged = true;
+    });
+
+    //rankin/{id}/acknowledge
+    String url = sprintf("%sapi/rankin/%d/acknowledge", [Constants.URL, widget.rankModel.id]);
+    print(url);
+    var response = await HttpHelper.authPost(context, url, {}, {}, false);
+    if (mounted) {
+      acknowledged = false;
+      if (response != null) {
+        var result = json.decode(response.body);
+        if (result['result'] == "success") {
+          widget.rankModel.acknowledged_at = "true";
+        }
+      }
+      setState(() {});
+    }
+  }
 
   _addFavorite() async {
     if (_isLoading) return;
@@ -182,17 +213,33 @@ class _RankDetailPageState extends State<RankDetailPage> {
                                             height: 20,
                                             child: Container(
                                               alignment: Alignment.centerLeft,
-                                              child: Material(
-                                                color: Colors.white,
-                                                child: InkWell(
-                                                  onLongPress: () {
-                                                    Helper.clipBoardWidget(widget.rankModel.asin, context);
-                                                  },
-                                                  child: Text(
-                                                    "ASIN: ${widget.rankModel.asin}",
-                                                    style: TextStyle(color: Colors.black54, fontSize: 12, fontWeight: FontWeight.bold),
+                                              child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                children: [
+                                                  Material(
+                                                    color: Colors.white,
+                                                    child: InkWell(
+                                                      onLongPress: () {
+                                                        Helper.clipBoardWidget(widget.rankModel.asin, context);
+                                                      },
+                                                      child: Text(
+                                                        "ASIN: ${widget.rankModel.asin}",
+                                                        style: TextStyle(color: Colors.black54, fontSize: 12, fontWeight: FontWeight.bold),
+                                                      ),
+                                                    ),
                                                   ),
-                                                ),
+                                                  acknowledged
+                                                      ? SpinKitThreeBounce(color: Colors.blue, size: 10)
+                                                      : (widget.rankModel.acknowledged_at == null
+                                                          ? Container()
+                                                          : RoundLabel(
+                                                              label: "確認済",
+                                                              fontSize: 10,
+                                                              height: 18,
+                                                              backgroundColor: Colors.lightBlueAccent,
+                                                              size: 10,
+                                                            ))
+                                                ],
                                               ),
                                             ),
                                           ),

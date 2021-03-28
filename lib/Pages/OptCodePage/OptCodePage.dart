@@ -133,12 +133,8 @@ class _OptCodePageState extends State<OptCodePage> {
             data['limitation']['purchasedlist'] is int ? data['limitation']['purchasedlist'] : 0,
             data['limitation']['rdb'],
           );
-          //sync suppliers name
-          for (var item in data['suppliers']) {
-            await _databaseProvider.insertOrUpdateSupplier(item['id'], item['name']);
-          }
           //update user setting
-          await _databaseProvider.insertOrUpdateSetting(memberId, data['user_settings']['keepa_api_key'], data['user_settings']['price_archive_percent'], data['user_settings']['track_ranking']);
+          await _databaseProvider.insertOrUpdateSetting(memberId, data['user_settings']['keepa_api_key'], data['user_settings']['price_archive_percent'], data['user_settings']['track_ranking'], data['user_settings']['low_ranking_range']);
           Navigator.pushAndRemoveUntil(context, PageTransition(child: MainPage(), type: PageTransitionType.fade), (route) => false);
         } else {
           _errorHandler("Failed user info sync work");
