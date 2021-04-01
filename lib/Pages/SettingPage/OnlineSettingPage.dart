@@ -48,22 +48,33 @@ class _OnlineSettingPageState extends State<OnlineSettingPage> {
 
   List<LowRankingRange> rankingRanges = [
     new LowRankingRange("指定なし", 0),
-    new LowRankingRange("1000以下", 1000),
-    new LowRankingRange("2000以下", 2000),
-    new LowRankingRange("3000以下", 3000),
-    new LowRankingRange("4000以下", 4000),
-    new LowRankingRange("5000以下", 5000),
-    new LowRankingRange("6000以下", 6000),
-    new LowRankingRange("7000以下", 7000),
-    new LowRankingRange("8000以下", 8000),
-    new LowRankingRange("9000以下", 9000),
-    new LowRankingRange("10000以下", 10000),
   ];
 
   @override
   void initState() {
     super.initState();
+    _initRankingRange();
     _getUserSetting();
+  }
+
+  _initRankingRange() {
+    int price = 1000;
+    while (price <= 100000) {
+      rankingRanges.add(new LowRankingRange("$price以下", price));
+      if (price < 10000) {
+        price = price + 1000;
+        continue;
+      }
+
+      if (price < 50000) {
+        price = price + 5000;
+        continue;
+      }
+
+      if (price <= 100000) {
+        price = price + 10000;
+      }
+    }
   }
 
   _getUserSetting() async {
@@ -183,23 +194,30 @@ class _OnlineSettingPageState extends State<OnlineSettingPage> {
   List<Widget> lowRankingRangeSheetButton() {
     List<Widget> result = [];
     for (LowRankingRange item in rankingRanges) {
-      result.add(CupertinoActionSheetAction(
-        onPressed: () {
+      result.add(InkWell(
+        onTap: () {
           setState(() {
             lowRankingRange = item.value;
           });
           _saveLowRankingRange();
           Navigator.pop(context);
         },
-        child: Text(item.show),
+        child: Container(
+          alignment: Alignment.center,
+          padding: EdgeInsets.symmetric(vertical: 10),
+          decoration: BoxDecoration(border: Border(bottom: BorderSide(width: 1, color: Colors.grey))),
+          child: Text(item.show, style: TextStyle(color: Colors.blue, fontSize: 15)),
+        ),
       ));
     }
     List<Widget> res = [];
-    res.add(SizedBox(
-      height: 400,
-      child: SingleChildScrollView(
-        child: Column(
-          children: result,
+    res.add(Material(
+      child: SizedBox(
+        height: 350,
+        child: SingleChildScrollView(
+          child: Column(
+            children: result,
+          ),
         ),
       ),
     ));
@@ -223,7 +241,7 @@ class _OnlineSettingPageState extends State<OnlineSettingPage> {
         onPressed: () {
           Navigator.pop(context);
         },
-        child: Text("キャンセル"),
+        child: Text("キャンセル", style: TextStyle(color: Colors.blue, fontSize: 15)),
       ),
     );
     return Scaffold(
