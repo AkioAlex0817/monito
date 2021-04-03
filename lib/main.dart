@@ -16,7 +16,6 @@ bool isIOS;
 bool isTest = false;
 String APP_VERSION;
 final currency = new NumberFormat("#,##0", "ja-JP");
-//bool isLogin = false;
 String currentPlan = null; //null: unauth, free: freePlan, std: Standard Plan, pro: Pro Plan
 int memberId = null;
 String memberName = null;
