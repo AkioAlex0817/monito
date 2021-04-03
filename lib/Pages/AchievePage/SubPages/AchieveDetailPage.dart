@@ -124,11 +124,12 @@ class _AchieveDetailPageState extends State<AchieveDetailPage> {
                                   width: 100,
                                   height: 100,
                                   child: Container(
-                                    decoration: BoxDecoration(border: Border.all(color: Colors.black12, width: 1, style: BorderStyle.solid), borderRadius: BorderRadius.circular(10)),
+                                    decoration: BoxDecoration(border: Border.all(color: Colors.black12, width: 1, style: BorderStyle.solid), borderRadius: BorderRadius.circular(10), color: Colors.white),
+                                    padding: EdgeInsets.all(3),
                                     child: AspectRatio(
                                       aspectRatio: 1,
                                       child: Hero(
-                                        tag: "achieve_image_" + widget.achieveModel.asin,
+                                        tag: "achieve_image_${widget.achieveModel.id}",
                                         child: CachedNetworkImage(
                                           placeholder: (context, url) => CupertinoActivityIndicator(radius: 10),
                                           imageUrl: Helper.imageURL(widget.achieveModel.photo),
@@ -152,7 +153,7 @@ class _AchieveDetailPageState extends State<AchieveDetailPage> {
                                         SizedBox(
                                           height: 60,
                                           child: Hero(
-                                            tag: "achieve_title_" + widget.achieveModel.asin,
+                                            tag: "achieve_title_${widget.achieveModel.id}",
                                             child: Container(
                                               alignment: Alignment.topLeft,
                                               child: Material(

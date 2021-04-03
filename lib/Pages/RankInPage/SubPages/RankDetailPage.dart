@@ -157,11 +157,12 @@ class _RankDetailPageState extends State<RankDetailPage> {
                                     width: 100,
                                     height: 100,
                                     child: Container(
-                                      decoration: BoxDecoration(border: Border.all(color: Colors.black12, width: 1, style: BorderStyle.solid), borderRadius: BorderRadius.circular(10)),
+                                      decoration: BoxDecoration(border: Border.all(color: Colors.black12, width: 1, style: BorderStyle.solid), borderRadius: BorderRadius.circular(10), color: Colors.white),
+                                      padding: EdgeInsets.all(3),
                                       child: AspectRatio(
                                         aspectRatio: 1,
                                         child: Hero(
-                                          tag: "rank_image_" + widget.rankModel.asin,
+                                          tag: "rank_image_${widget.rankModel.id}",
                                           child: CachedNetworkImage(
                                             placeholder: (context, url) => CupertinoActivityIndicator(radius: 10),
                                             imageUrl: Helper.imageURL(widget.rankModel.photo),
@@ -185,7 +186,7 @@ class _RankDetailPageState extends State<RankDetailPage> {
                                           SizedBox(
                                             height: 60,
                                             child: Hero(
-                                              tag: "rank_title_" + widget.rankModel.asin,
+                                              tag: "rank_title_${widget.rankModel.id}",
                                               child: Container(
                                                 alignment: Alignment.topLeft,
                                                 child: Material(

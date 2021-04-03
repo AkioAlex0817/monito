@@ -150,7 +150,8 @@ class _PublishPageState extends State<PublishPage> {
                                   width: 100,
                                   height: 100,
                                   child: Container(
-                                    decoration: BoxDecoration(border: Border.all(color: Colors.black12, width: 1, style: BorderStyle.solid), borderRadius: BorderRadius.circular(10)),
+                                    decoration: BoxDecoration(border: Border.all(color: Colors.black12, width: 1, style: BorderStyle.solid), borderRadius: BorderRadius.circular(10), color: Colors.white),
+                                    padding: EdgeInsets.all(3),
                                     child: AspectRatio(
                                       aspectRatio: 1,
                                       child: CachedNetworkImage(

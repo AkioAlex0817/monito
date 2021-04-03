@@ -47,7 +47,7 @@ class RankListItem extends StatelessWidget {
                         child: AspectRatio(
                           aspectRatio: 1,
                           child: Hero(
-                            tag: 'rank_image_' + rankModel.asin,
+                            tag: 'rank_image_${rankModel.id}',
                             child: CachedNetworkImage(
                               placeholder: (context, url) => CupertinoActivityIndicator(radius: 10),
                               errorWidget: (context, url, error) => Icon(Icons.error, color: Colors.red),
@@ -80,7 +80,7 @@ class RankListItem extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Hero(
-                        tag: "rank_title_" + rankModel.asin,
+                        tag: "rank_title_${rankModel.id}",
                         child: Container(
                           alignment: Alignment.centerLeft,
                           child: Material(

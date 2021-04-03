@@ -179,15 +179,19 @@ class _RDBPurchasedDetailPageState extends State<RDBPurchasedDetailPage> {
                                           width: 100,
                                           height: 100,
                                           child: Container(
-                                            decoration: BoxDecoration(border: Border.all(color: Colors.black12, width: 1, style: BorderStyle.solid), borderRadius: BorderRadius.circular(10)),
+                                            decoration: BoxDecoration(border: Border.all(color: Colors.black12, width: 1, style: BorderStyle.solid), borderRadius: BorderRadius.circular(10), color: Colors.white),
+                                            padding: EdgeInsets.all(3),
                                             child: AspectRatio(
                                               aspectRatio: 1,
-                                              child: CachedNetworkImage(
-                                                placeholder: (context, url) => CupertinoActivityIndicator(radius: 10),
-                                                imageUrl: Helper.imageURL(widget.rdbPurchasedModel.photo),
-                                                errorWidget: (context, url, error) => Icon(
-                                                  Icons.error,
-                                                  color: Colors.red,
+                                              child: Hero(
+                                                tag: "rdb_purchased_image_${widget.rdbPurchasedModel.id}",
+                                                child: CachedNetworkImage(
+                                                  placeholder: (context, url) => CupertinoActivityIndicator(radius: 10),
+                                                  imageUrl: Helper.imageURL(widget.rdbPurchasedModel.photo),
+                                                  errorWidget: (context, url, error) => Icon(
+                                                    Icons.error,
+                                                    color: Colors.red,
+                                                  ),
                                                 ),
                                               ),
                                             ),
@@ -203,15 +207,21 @@ class _RDBPurchasedDetailPageState extends State<RDBPurchasedDetailPage> {
                                               children: [
                                                 SizedBox(
                                                   height: 60,
-                                                  child: Container(
-                                                    alignment: Alignment.topLeft,
-                                                    child: Text(
-                                                      widget.rdbPurchasedModel.title,
-                                                      textAlign: TextAlign.left,
-                                                      style: TextStyle(color: Colors.black, fontSize: 13.5, fontWeight: FontWeight.bold),
-                                                      maxLines: 3,
-                                                      softWrap: true,
-                                                      overflow: TextOverflow.ellipsis,
+                                                  child: Hero(
+                                                    tag: "rdb_purchased_title_${widget.rdbPurchasedModel.id}",
+                                                    child: Container(
+                                                      alignment: Alignment.topLeft,
+                                                      child: Material(
+                                                        type: MaterialType.transparency,
+                                                        child: Text(
+                                                          widget.rdbPurchasedModel.title,
+                                                          textAlign: TextAlign.left,
+                                                          style: TextStyle(color: Colors.black, fontSize: 13.5, fontWeight: FontWeight.bold),
+                                                          maxLines: 3,
+                                                          softWrap: true,
+                                                          overflow: TextOverflow.ellipsis,
+                                                        ),
+                                                      ),
                                                     ),
                                                   ),
                                                 ),

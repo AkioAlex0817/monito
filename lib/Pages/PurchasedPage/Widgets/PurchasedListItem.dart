@@ -43,7 +43,7 @@ class PurchasedListItem extends StatelessWidget {
                   child: AspectRatio(
                     aspectRatio: 1,
                     child: Hero(
-                      tag: 'purchased_image_' + purchasedModel.asin,
+                      tag: 'purchased_image_${purchasedModel.id}',
                       child: CachedNetworkImage(
                         placeholder: (context, url) => CupertinoActivityIndicator(radius: 10),
                         errorWidget: (context, url, error) => Icon(Icons.error, color: Colors.red),
@@ -58,7 +58,7 @@ class PurchasedListItem extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Hero(
-                        tag: "purchased_title_" + purchasedModel.asin,
+                        tag: "purchased_title_${purchasedModel.id}",
                         child: Container(
                           alignment: Alignment.centerLeft,
                           child: Material(

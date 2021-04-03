@@ -43,7 +43,7 @@ class AchieveListItem extends StatelessWidget {
                   child: AspectRatio(
                     aspectRatio: 1,
                     child: Hero(
-                      tag: 'achieve_image_' + achieveModel.asin,
+                      tag: 'achieve_image_${achieveModel.id}',
                       child: CachedNetworkImage(
                         placeholder: (context, url) => CupertinoActivityIndicator(radius: 10),
                         errorWidget: (context, url, error) => Icon(Icons.error, color: Colors.red),
@@ -58,7 +58,7 @@ class AchieveListItem extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Hero(
-                        tag: "achieve_title_" + achieveModel.asin,
+                        tag: "achieve_title_${achieveModel.id}",
                         child: Container(
                           alignment: Alignment.centerLeft,
                           child: Material(

@@ -41,10 +41,13 @@ class RDBPurchasedListItem extends StatelessWidget {
                   padding: EdgeInsets.all(3),
                   child: AspectRatio(
                     aspectRatio: 1,
-                    child: CachedNetworkImage(
-                      placeholder: (context, url) => CupertinoActivityIndicator(radius: 10),
-                      errorWidget: (context, url, error) => Icon(Icons.error, color: Colors.red),
-                      imageUrl: Helper.imageURL(rdbPurchasedModel.photo),
+                    child: Hero(
+                      tag: 'rdb_purchased_image_${rdbPurchasedModel.id}',
+                      child: CachedNetworkImage(
+                        placeholder: (context, url) => CupertinoActivityIndicator(radius: 10),
+                        errorWidget: (context, url, error) => Icon(Icons.error, color: Colors.red),
+                        imageUrl: Helper.imageURL(rdbPurchasedModel.photo),
+                      ),
                     ),
                   ),
                 ),
@@ -53,14 +56,20 @@ class RDBPurchasedListItem extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        alignment: Alignment.centerLeft,
-                        child: Text(
-                          rdbPurchasedModel.title,
-                          style: TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.bold),
-                          maxLines: 2,
-                          softWrap: true,
-                          overflow: TextOverflow.ellipsis,
+                      Hero(
+                        tag: "rdb_purchased_title_${rdbPurchasedModel.id}",
+                        child: Container(
+                          alignment: Alignment.centerLeft,
+                          child: Material(
+                            type: MaterialType.transparency,
+                            child: Text(
+                              rdbPurchasedModel.title,
+                              style: TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.bold),
+                              maxLines: 2,
+                              softWrap: true,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
                         ),
                       ),
                       Text("ASIN: ${rdbPurchasedModel.asin}", style: TextStyle(color: Colors.black45, fontSize: 12, fontWeight: FontWeight.bold)),

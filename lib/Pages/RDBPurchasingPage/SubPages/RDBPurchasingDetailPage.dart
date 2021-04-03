@@ -125,11 +125,12 @@ class _RDBPurchasingDetailPageState extends State<RDBPurchasingDetailPage> {
                                     width: 100,
                                     height: 100,
                                     child: Container(
-                                      decoration: BoxDecoration(border: Border.all(color: Colors.black12, width: 1, style: BorderStyle.solid), borderRadius: BorderRadius.circular(10)),
+                                      decoration: BoxDecoration(border: Border.all(color: Colors.black12, width: 1, style: BorderStyle.solid), borderRadius: BorderRadius.circular(10), color: Colors.white),
+                                      padding: EdgeInsets.all(3),
                                       child: AspectRatio(
                                         aspectRatio: 1,
                                         child: Hero(
-                                          tag: "rdb_purchasing_image_" + widget.rdbPurchasingModel.asin,
+                                          tag: "rdb_purchasing_image_${widget.rdbPurchasingModel.id}",
                                           child: CachedNetworkImage(
                                             placeholder: (context, url) => CupertinoActivityIndicator(radius: 10),
                                             imageUrl: Helper.imageURL(widget.rdbPurchasingModel.photo),
@@ -153,7 +154,7 @@ class _RDBPurchasingDetailPageState extends State<RDBPurchasingDetailPage> {
                                           SizedBox(
                                             height: 60,
                                             child: Hero(
-                                              tag: "rdb_purchasing_title_" + widget.rdbPurchasingModel.asin,
+                                              tag: "rdb_purchasing_title_${widget.rdbPurchasingModel.id}",
                                               child: Container(
                                                 alignment: Alignment.topLeft,
                                                 child: Material(

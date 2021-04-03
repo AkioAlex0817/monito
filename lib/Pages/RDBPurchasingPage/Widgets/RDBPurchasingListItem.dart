@@ -42,7 +42,7 @@ class RDBPurchasingListItem extends StatelessWidget {
                   child: AspectRatio(
                     aspectRatio: 1,
                     child: Hero(
-                      tag: 'rdb_purchasing_image_' + rdbPurchasingModel.asin,
+                      tag: 'rdb_purchasing_image_${rdbPurchasingModel.id}',
                       child: CachedNetworkImage(
                         placeholder: (context, url) => CupertinoActivityIndicator(radius: 10),
                         errorWidget: (context, url, error) => Icon(Icons.error, color: Colors.red),
@@ -57,7 +57,7 @@ class RDBPurchasingListItem extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Hero(
-                        tag: "rdb_purchasing_title_" + rdbPurchasingModel.asin,
+                        tag: "rdb_purchasing_title_${rdbPurchasingModel.id}",
                         child: Container(
                           alignment: Alignment.centerLeft,
                           child: Material(
