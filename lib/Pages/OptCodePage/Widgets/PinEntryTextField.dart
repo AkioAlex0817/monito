@@ -92,7 +92,7 @@ class PinEntryTextFieldState extends State<PinEntryTextField> {
         keyboardType: TextInputType.number,
         textAlign: TextAlign.center,
         maxLength: 1,
-        style: TextStyle(color: Colors.black, fontFamily: 'Medium', fontSize: widget.fontSize),
+        style: TextStyle(color: Colors.white, fontFamily: 'Medium', fontSize: widget.fontSize),
         focusNode: _focusNodes[i],
         obscureText: widget.isTextObscure,
         decoration: InputDecoration(focusColor: Color(0xFFeb4b51), counterText: "", border: widget.showFieldAsBox ? OutlineInputBorder(borderSide: BorderSide(width: 2.0)) : null),

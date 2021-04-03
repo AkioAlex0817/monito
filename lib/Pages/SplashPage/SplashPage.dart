@@ -26,33 +26,23 @@ class _SplashPageState extends State<SplashPage> {
   Widget build(BuildContext context) {
     Size screenSize = MediaQuery.of(context).size;
     return Scaffold(
-      backgroundColor: Constants.BackgroundColor,
+      backgroundColor: Color.fromARGB(255, 57, 62, 70),
       body: Container(
         width: screenSize.width + screenSize.width * 0.4,
         child: Stack(
           children: <Widget>[
-            //Image.asset(splash_bg, width: MediaQuery.of(context).size.width, height: MediaQuery.of(context).size.height, fit: BoxFit.cover),
             Positioned(
-              top: -screenSize.width * 0.2,
-              left: -screenSize.width * 0.2,
-              child: Container(
-                width: screenSize.width * 0.65,
-                height: screenSize.width * 0.65,
-                decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.grey.withOpacity(0.2)),
-              ),
-            ),
-            Positioned(
-              top: screenSize.height * 0.2,
-              left: screenSize.width / 4,
+              top: screenSize.height * 0.15,
+              left: 0,
+              right: 0,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                   Image.asset(
-                    "assets/splash_icon.png",
-                    width: screenSize.width * 0.5,
+                    "assets/app_launch_icon.png",
+                    width: screenSize.width * 0.6,
                     fit: BoxFit.cover,
-                  ),
+                  )
                 ],
               ),
             ),
@@ -65,24 +55,8 @@ class _SplashPageState extends State<SplashPage> {
                 alignment: Alignment.center,
                 child: Text(
                   landingDescription,
-                  style: TextStyle(color: Colors.black, fontSize: 12, fontWeight: FontWeight.bold),
+                  style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
                 ),
-              ),
-            ),
-            Align(
-              alignment: Alignment.bottomRight,
-              child: Stack(
-                children: <Widget>[
-                  Positioned(
-                    bottom: -screenSize.width * 0.2,
-                    right: -screenSize.width * 0.2,
-                    child: Container(
-                      width: screenSize.width * 0.65,
-                      height: screenSize.width * 0.65,
-                      decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.grey.withOpacity(0.2)),
-                    ),
-                  ),
-                ],
               ),
             ),
           ],

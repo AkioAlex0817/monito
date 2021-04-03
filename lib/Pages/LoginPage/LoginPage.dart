@@ -325,10 +325,16 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    var width = MediaQuery.of(context).size.width;
-    var height = MediaQuery.of(context).size.height;
+    var width = MediaQuery
+        .of(context)
+        .size
+        .width;
+    var height = MediaQuery
+        .of(context)
+        .size
+        .height;
     return Scaffold(
-      backgroundColor: Constants.BackgroundColor,
+      backgroundColor: Color.fromARGB(255, 57, 62, 70),
       body: SafeArea(
         child: PageView.builder(
           controller: pageController,
@@ -347,13 +353,13 @@ class _LoginPageState extends State<LoginPage> {
                           child: Column(
                             children: <Widget>[
                               Center(
-                                child: Image.asset("assets/splash_icon.png", width: width * 0.4),
+                                child: Image.asset("assets/app_launch_icon.png", width: width * 0.4),
                               ),
                               40.height,
                               TextField(
                                 focusNode: _usernameNode,
                                 controller: _usernameController,
-                                style: TextStyle(fontSize: 18.0, color: Colors.black),
+                                style: TextStyle(fontSize: 18.0, color: Colors.white),
                                 textInputAction: TextInputAction.next,
                                 keyboardType: TextInputType.emailAddress,
                                 onSubmitted: (term) {
@@ -373,7 +379,7 @@ class _LoginPageState extends State<LoginPage> {
                               TextField(
                                 focusNode: _passwordNode,
                                 controller: _passwordController,
-                                style: TextStyle(fontSize: 18.0, color: Colors.black),
+                                style: TextStyle(fontSize: 18.0, color: Colors.white),
                                 obscureText: isSecure,
                                 textInputAction: TextInputAction.next,
                                 keyboardType: TextInputType.visiblePassword,
@@ -389,7 +395,7 @@ class _LoginPageState extends State<LoginPage> {
                                       },
                                       child: Icon(
                                         isSecure ? Icons.visibility : Icons.visibility_off,
-                                        color: Colors.black,
+                                        color: Colors.white,
                                       ),
                                     ),
                                     contentPadding: EdgeInsets.fromLTRB(16, 10, 16, 10),
@@ -427,7 +433,8 @@ class _LoginPageState extends State<LoginPage> {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Text("アカウントを持っていない方は?"),
+                                  Text("アカウントを持っていない方は?", style: TextStyle(color: Colors.white),),
+                                  7.width,
                                   InkWell(
                                     onTap: () {
                                       FocusScope.of(context).requestFocus(new FocusNode());
@@ -448,8 +455,8 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     _isLoading
                         ? Positioned.fill(
-                            child: Loading(),
-                          )
+                      child: Loading(),
+                    )
                         : Container()
                   ],
                 );
@@ -465,13 +472,13 @@ class _LoginPageState extends State<LoginPage> {
                           child: Column(
                             children: [
                               Center(
-                                child: Image.asset("assets/splash_icon.png", width: width * 0.4),
+                                child: Image.asset("assets/app_launch_icon.png", width: width * 0.4),
                               ),
                               30.height,
                               TextField(
                                 focusNode: _nickNameNode,
                                 controller: _nicknameController,
-                                style: TextStyle(fontSize: 18.0, color: Colors.black),
+                                style: TextStyle(fontSize: 18.0, color: Colors.white),
                                 textInputAction: TextInputAction.next,
                                 keyboardType: TextInputType.text,
                                 onSubmitted: (term) {
@@ -491,7 +498,7 @@ class _LoginPageState extends State<LoginPage> {
                               TextField(
                                 focusNode: _emailNode,
                                 controller: _emailController,
-                                style: TextStyle(fontSize: 18.0, color: Colors.black),
+                                style: TextStyle(fontSize: 18.0, color: Colors.white),
                                 textInputAction: TextInputAction.next,
                                 keyboardType: TextInputType.emailAddress,
                                 onSubmitted: (term) {
@@ -511,7 +518,7 @@ class _LoginPageState extends State<LoginPage> {
                               TextField(
                                 focusNode: _newPasswordNode,
                                 controller: _newPasswordController,
-                                style: TextStyle(fontSize: 18.0, color: Colors.black),
+                                style: TextStyle(fontSize: 18.0, color: Colors.white),
                                 obscureText: _newPasswordSecure,
                                 textInputAction: TextInputAction.next,
                                 keyboardType: TextInputType.visiblePassword,
@@ -528,7 +535,7 @@ class _LoginPageState extends State<LoginPage> {
                                       },
                                       child: Icon(
                                         _newPasswordSecure ? Icons.visibility : Icons.visibility_off,
-                                        color: Colors.black,
+                                        color: Colors.white,
                                       ),
                                     ),
                                     contentPadding: EdgeInsets.fromLTRB(16, 10, 16, 10),
@@ -543,7 +550,7 @@ class _LoginPageState extends State<LoginPage> {
                               TextField(
                                 focusNode: _confirmPasswordNode,
                                 controller: _confirmPasswordController,
-                                style: TextStyle(fontSize: 18.0, color: Colors.black),
+                                style: TextStyle(fontSize: 18.0, color: Colors.white),
                                 obscureText: _confirmPasswordSecure,
                                 textInputAction: TextInputAction.next,
                                 keyboardType: TextInputType.visiblePassword,
@@ -559,7 +566,7 @@ class _LoginPageState extends State<LoginPage> {
                                       },
                                       child: Icon(
                                         _confirmPasswordSecure ? Icons.visibility : Icons.visibility_off,
-                                        color: Colors.black,
+                                        color: Colors.white,
                                       ),
                                     ),
                                     contentPadding: EdgeInsets.fromLTRB(16, 10, 16, 10),
@@ -596,7 +603,8 @@ class _LoginPageState extends State<LoginPage> {
                               Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Text("アカウントをお持ちの方は?"),
+                                  Text("アカウントをお持ちの方は?", style: TextStyle(color: Colors.white)),
+                                  7.width,
                                   InkWell(
                                     onTap: () {
                                       FocusScope.of(context).requestFocus(new FocusNode());
@@ -616,8 +624,8 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     _isLoading
                         ? Positioned.fill(
-                            child: Loading(),
-                          )
+                      child: Loading(),
+                    )
                         : Container()
                   ],
                 );

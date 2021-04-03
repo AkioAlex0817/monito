@@ -168,7 +168,7 @@ class _OptCodePageState extends State<OptCodePage> {
         .size
         .height;
     return Scaffold(
-      backgroundColor: Constants.BackgroundColor,
+      backgroundColor: Color.fromARGB(255, 57, 62, 70),
       body: SafeArea(
         child: Stack(
           children: [
@@ -180,14 +180,14 @@ class _OptCodePageState extends State<OptCodePage> {
                   child: Column(
                     children: [
                       Center(
-                        child: Image.asset("assets/splash_icon.png", width: width * 0.4),
+                        child: Image.asset("assets/app_launch_icon.png", width: width * 0.5),
                       ),
                       40.height,
                       Container(
                         alignment: Alignment.center,
                         child: Text(
                           "認証コードを入力していください。 \n 入力されたメールアドレスに認証コードを転送しました。",
-                          style: TextStyle(color: Colors.black),
+                          style: TextStyle(color: Colors.white),
                           textAlign: TextAlign.center,
                         ),
                       ),
@@ -233,7 +233,7 @@ class _OptCodePageState extends State<OptCodePage> {
                       height: 40,
                       child: Icon(
                         Icons.chevron_left,
-                        color: Colors.black,
+                        color: Colors.white,
                       ),
                     ),
                     onTap: () {
