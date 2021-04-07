@@ -8,6 +8,7 @@ import 'package:monito/Helper/Constants.dart';
 import 'package:monito/Helper/Helper.dart';
 import 'package:monito/Helper/HttpHelper.dart';
 import 'package:monito/Helper/LangHelper.dart';
+import 'package:monito/Pages/Dev/DevPage.dart';
 import 'package:monito/Pages/SettingPage/Model/LowRankingRange.dart';
 import 'package:monito/Pages/SettingPage/Widgets/TrackArchivePercentDialog.dart';
 import 'package:monito/Widgets/Loading.dart';
@@ -375,7 +376,9 @@ class _OnlineSettingPageState extends State<OnlineSettingPage> {
                                 "(v${APP_VERSION})",
                                 style: TextStyle(color: Colors.redAccent.withOpacity(0.5), fontSize: 14, fontWeight: FontWeight.bold),
                               ),
-                              onPressed: () {},
+                              onPressed: () {
+                                //Navigator.of(context).push(PageTransition(type: PageTransitionType.rightToLeft, child: DevPage(), inheritTheme: false, curve: Curves.easeIn));
+                              },
                             )
                           ],
                         ),

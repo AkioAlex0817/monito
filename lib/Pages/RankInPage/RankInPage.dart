@@ -60,25 +60,21 @@ class _RankInPageState extends State<RankInPage> {
         if (mounted) {
           if (response != null) {
             var result = json.decode(response.body);
-            if ((result['code'] is int ? result['code'] : int.parse(result['code'])) == 405) {
-              Navigator.pop(context, 405);
-            } else {
-              if (result['result'] == "success") {
-                _currentPage++;
-                _hasNextPage = _currentPage <= result['data']['last_page'];
-                for (var item in result['data']['data']) {
-                  item['category_name'] = categories.firstWhere((element) => element['cat_id'] == item['cat_id'].toString())['name'];
-                  lists.add(RankModel.fromJson(item));
-                }
-                if (!_isInit) {
-                  _isInit = true;
-                }
-                setState(() {
-                  rankList.addAll(lists);
-                });
-              } else {
-                _errorHandler();
+            if (result['result'] == "success") {
+              _currentPage++;
+              _hasNextPage = _currentPage <= result['data']['last_page'];
+              for (var item in result['data']['data']) {
+                item['category_name'] = categories.firstWhere((element) => element['cat_id'] == item['cat_id'].toString())['name'];
+                lists.add(RankModel.fromJson(item));
               }
+              if (!_isInit) {
+                _isInit = true;
+              }
+              setState(() {
+                rankList.addAll(lists);
+              });
+            } else {
+              _errorHandler();
             }
           } else {
             _errorHandler();

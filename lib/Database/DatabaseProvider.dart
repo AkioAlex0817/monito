@@ -17,7 +17,7 @@ class DatabaseProvider {
 
   Future<Database> createDatabase() async {
     String dbPath = await getDatabasesPath();
-    return await openDatabase(join(dbPath, 'monito_v1.db'), version: 1, onCreate: (Database database, int version) async {
+    return await openDatabase(join(dbPath, 'monito_v2.db'), version: 1, onCreate: (Database database, int version) async {
       await database.execute("CREATE TABLE category("
           "cat_id TEXT(20) PRIMARY KEY NOT NULL, "
           "name TEXT(255) NOT NULL, "
@@ -79,7 +79,7 @@ class DatabaseProvider {
     try {
       await db.delete('user_settings');
     } catch (err) {
-      print("Remove all Suppliers Error: $err");
+      print("Remove User Setting Error: $err");
       return false;
     }
     return true;

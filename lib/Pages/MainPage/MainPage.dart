@@ -138,14 +138,12 @@ class _MainPageState extends State<MainPage> {
   void _switchPage(int page) async {
     switch (page) {
       case Constants.RankInPage:
-        Navigator.push(context, PageTransition(type: PageTransitionType.fade, child: RankInPage(), inheritTheme: true, curve: Curves.easeIn, ctx: context)).then((value) {
-          if (value != null && value == 405) {
-            _emptySettingHandler();
-          }
-          if (mounted) {
-            setState(() {});
-          }
-        });
+        Map<String, dynamic> userSetting = await _databaseProvider.getUserSetting(memberId);
+        if (userSetting == null || Helper.isNullOrEmpty(userSetting['keepa_api_key'])) {
+          _emptySettingHandler();
+          return;
+        }
+        Navigator.push(context, PageTransition(type: PageTransitionType.fade, child: RankInPage(), inheritTheme: true, curve: Curves.easeIn, ctx: context));
         break;
       case Constants.ConditionPage:
         Map<String, dynamic> userSetting = await _databaseProvider.getUserSetting(memberId);

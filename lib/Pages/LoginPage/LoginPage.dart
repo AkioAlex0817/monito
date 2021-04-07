@@ -303,7 +303,7 @@ class _LoginPageState extends State<LoginPage> {
             data['limitation']['rdb'],
           );
           //update user setting
-          await _databaseProvider.insertOrUpdateSetting(memberId, data['user_settings']['keepa_api_key'], data['user_settings']['price_archive_percent'], data['user_settings']['track_ranking'], data['user_settings']['low_ranking_range']);
+          await _databaseProvider.insertOrUpdateSetting(data['profile']['id'], data['user_settings']['keepa_api_key'], data['user_settings']['price_archive_percent'], data['user_settings']['track_ranking'], data['user_settings']['low_ranking_range']);
           Navigator.pushAndRemoveUntil(context, PageTransition(child: MainPage(), type: PageTransitionType.fade), (route) => false);
         } else {
           _errorHandler("ユーザ情報同期化が失敗しました。");
