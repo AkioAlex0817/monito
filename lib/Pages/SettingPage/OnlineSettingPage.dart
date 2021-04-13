@@ -325,7 +325,7 @@ class _OnlineSettingPageState extends State<OnlineSettingPage> {
                               ),
                             ),
                             SettingListItem(
-                              menuTitle: "指定範囲",
+                              menuTitle: "ランクイン通知範囲",
                               onPressed: () {
                                 showCupertinoModalPopup(context: context, builder: (BuildContext context) => selectRankHandler);
                               },
@@ -337,7 +337,7 @@ class _OnlineSettingPageState extends State<OnlineSettingPage> {
                                     ),
                             ),
                             SettingListItem(
-                              menuTitle: "下位ランキング範囲",
+                              menuTitle: "前回ランキング範囲",
                               onPressed: () {
                                 showCupertinoModalPopup(context: context, builder: (BuildContext context) => selectLowRankingRangeHandler);
                               },
