@@ -131,10 +131,10 @@ class MyApp extends StatelessWidget {
       }
       showNotification(title, body, image, type);
     }, onLaunch: (Map<String, dynamic> message) async {
-      print('OnLaunch');
-      print(message);
+      // print('OnLaunch');
+      // print(message);
     }, onResume: (Map<String, dynamic> message) async {
-      print('OnResume');
+      //print('OnResume');
       String type = "";
       if (isIOS) {
         final notification = message['aps'];

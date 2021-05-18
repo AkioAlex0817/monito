@@ -48,7 +48,6 @@ class _RankDetailPageState extends State<RankDetailPage> {
 
     //rankin/{id}/acknowledge
     String url = sprintf("%sapi/rankin/%d/acknowledge", [Constants.URL, widget.rankModel.id]);
-    print(url);
     var response = await HttpHelper.authPost(context, url, {}, {}, false);
     if (mounted) {
       acknowledged = false;

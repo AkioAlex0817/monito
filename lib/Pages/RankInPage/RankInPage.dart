@@ -5,13 +5,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:monito/Database/DatabaseProvider.dart';
 import 'package:monito/Helper/Constants.dart';
+import 'package:monito/Helper/Helper.dart';
 import 'package:monito/Helper/HttpHelper.dart';
+import 'package:monito/Helper/LangHelper.dart';
 import 'package:monito/Pages/RankInPage/Model/RankModel.dart';
 import 'package:monito/Pages/RankInPage/SubPages/RankDetailPage.dart';
 import 'package:monito/Pages/RankInPage/Widgets/RankListItem.dart';
 import 'package:monito/Widgets/Loading.dart';
-import 'package:monito/main.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:sprintf/sprintf.dart';
 
 class RankInPage extends StatefulWidget {
   @override
@@ -26,8 +28,12 @@ class _RankInPageState extends State<RankInPage> {
   int _currentPage = 1;
   bool _hasNextPage = true;
   bool _isInit = false;
+  bool _isLoading = false;
   List<RankModel> rankList = [];
   List<Map<String, dynamic>> categories = [];
+  List<Map<String, String>> popMenus = [
+    {"key": "1", "value": "全て確認済み"}
+  ];
 
   @override
   void initState() {
@@ -95,6 +101,38 @@ class _RankInPageState extends State<RankInPage> {
     }
   }
 
+  _popUpMenuClickHandler(String key) {
+    switch (key) {
+      case "1":
+        _acknowledgeAll();
+        break;
+    }
+  }
+
+  _acknowledgeAll() async {
+    if (_isLoading) return;
+    setState(() {
+      _isLoading = true;
+    });
+
+    String url = sprintf("%sapi/rankin/all/acknowledge", [Constants.URL]);
+    var response = await HttpHelper.authPost(context, url, {}, {}, false);
+    if (mounted) {
+      if (response != null) {
+        if (rankList.length > 0) {
+          for (RankModel item in rankList) {
+            item.acknowledged_at = "true";
+          }
+        }
+      } else {
+        Helper.showToast(LangHelper.FAILED, false);
+      }
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -103,6 +141,19 @@ class _RankInPageState extends State<RankInPage> {
         centerTitle: true,
         backgroundColor: Constants.StatusBarColor,
         title: Text("ランクイン履歴"),
+        actions: [
+          PopupMenuButton<String>(
+            onSelected: _popUpMenuClickHandler,
+            itemBuilder: (context) {
+              return popMenus.map((item) {
+                return PopupMenuItem(
+                  value: item['key'],
+                  child: Text(item['value']),
+                );
+              }).toList();
+            },
+          )
+        ],
       ),
       backgroundColor: Constants.BackgroundColor,
       body: SafeArea(
@@ -153,6 +204,11 @@ class _RankInPageState extends State<RankInPage> {
                   : Positioned.fill(
                       child: Container(color: Constants.BackgroundColor, child: Loading()),
                     ),
+              _isLoading
+                  ? Positioned.fill(
+                      child: Container(color: Constants.BackgroundColor.withOpacity(0.3), child: Loading()),
+                    )
+                  : Container(),
               _isError
                   ? Positioned.fill(
                       child: Container(
