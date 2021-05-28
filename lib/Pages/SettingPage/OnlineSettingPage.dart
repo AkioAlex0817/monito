@@ -377,7 +377,7 @@ class _OnlineSettingPageState extends State<OnlineSettingPage> {
                                 style: TextStyle(color: Colors.redAccent.withOpacity(0.5), fontSize: 14, fontWeight: FontWeight.bold),
                               ),
                               onPressed: () {
-                                //Navigator.of(context).push(PageTransition(type: PageTransitionType.rightToLeft, child: DevPage(), inheritTheme: false, curve: Curves.easeIn));
+                                Navigator.of(context).push(PageTransition(type: PageTransitionType.rightToLeft, child: DevPage(), inheritTheme: false, curve: Curves.easeIn));
                               },
                             )
                           ],
