@@ -67,6 +67,7 @@ class _SplashPageState extends State<SplashPage> {
 
   void _init() async {
     landingDescription = "設定同期中。。。";
+    //MyApp.firebaseMessaging.deleteInstanceID();
     deviceToken = await MyApp.firebaseMessaging.getToken();
     Timer(Duration(seconds: 1), () => _nextPage());
   }

@@ -46,7 +46,7 @@ dependencies:
   flutter_launcher_icons: ^0.8.1
   font_awesome_flutter: ^8.11.0
   firebase_core: ^0.5.0+1
-  firebase_messaging: ^7.0.3
+  firebase_messaging: 7.0.0
   flutter_local_notifications: ^4.0.1+2
 
 dev_dependencies:
