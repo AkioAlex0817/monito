@@ -145,7 +145,7 @@ class MyApp extends StatelessWidget {
       }
       onSelectNotification(type);
     });
-    if (isIOS) {
+    if (Platform.isIOS) {
       firebaseMessaging.requestNotificationPermissions(const IosNotificationSettings(sound: true, badge: true, alert: true));
     }
 
