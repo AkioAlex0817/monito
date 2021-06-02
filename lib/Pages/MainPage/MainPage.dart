@@ -54,6 +54,14 @@ class _MainPageState extends State<MainPage> {
     super.dispose();
   }
 
+  test() async{
+    int targetTimeStamp = DateTime.now().microsecondsSinceEpoch;
+    List<Map<String, dynamic>> results = await _databaseProvider.getExpiredNotifications(targetTimeStamp);
+    print(results.length);
+    print(results[0]);
+    MyApp.flutterLocalNotificationsPlugin.cancel(694070587);
+  }
+
   Future<void> _initBackgroundSetting() async {
     BackgroundFetch.configure(
         BackgroundFetchConfig(
@@ -602,6 +610,12 @@ class _MainPageState extends State<MainPage> {
             },
           ),
         ),
+        /*appBar: AppBar(
+          title: InkWell(
+            onTap: test,
+            child: Text("Test"),
+          ),
+        ),*/
       ),
     );
   }
