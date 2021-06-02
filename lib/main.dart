@@ -1,13 +1,16 @@
 import 'dart:io';
 
+import 'package:background_fetch/background_fetch.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
 import 'package:monito/Helper/Constants.dart';
 import 'package:monito/Pages/SplashPage/SplashPage.dart';
 import 'package:package_info/package_info.dart';
 import 'package:page_transition/page_transition.dart';
+import 'Database/DatabaseProvider.dart';
 import 'Helper/Helper.dart';
 import 'Helper/SharePreferenceUtil.dart';
 import 'Pages/MainPage/MainPage.dart';
@@ -30,6 +33,10 @@ int allowPurchasedList = 0;
 bool allowRDB = false;
 String deviceToken = "";
 
+void backgroundFetchHeadlessTask(String taskId) async {
+  BackgroundFetch.finish(taskId);
+}
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   isIOS = Platform.isIOS;
@@ -37,6 +44,7 @@ void main() async {
   PackageInfo packageInfo = await PackageInfo.fromPlatform();
   APP_VERSION = packageInfo.version;
   runApp(MyApp());
+  BackgroundFetch.registerHeadlessTask(backgroundFetchHeadlessTask);
 }
 
 class MyApp extends StatelessWidget {
@@ -45,7 +53,8 @@ class MyApp extends StatelessWidget {
   static Locale kLocale = const Locale("ja", "jp");
   static FirebaseMessaging firebaseMessaging = FirebaseMessaging();
   final GlobalKey<NavigatorState> navigatorKey = new GlobalKey<NavigatorState>();
-  FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  final DatabaseProvider _databaseProvider = DatabaseProvider.db;
+  static FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
   AndroidInitializationSettings androidInitializationSettings;
   IOSInitializationSettings iosInitializationSettings;
   InitializationSettings initializationSettings;
@@ -54,7 +63,10 @@ class MyApp extends StatelessWidget {
     if (isIOS) {
       IOSNotificationDetails iosNotificationDetails = new IOSNotificationDetails();
       NotificationDetails notificationDetails = new NotificationDetails(iOS: iosNotificationDetails);
-      await flutterLocalNotificationsPlugin.show(0, title, body, notificationDetails, payload: type);
+      int notificationId = Helper.getRandomId();
+      int expiredAt = DateTime.now().millisecondsSinceEpoch;
+      _databaseProvider.insertNotification({'id': notificationId.toString(), 'expired_at': expiredAt});
+      await flutterLocalNotificationsPlugin.show(notificationId, title, body, notificationDetails, payload: type);
     } else {
       final String largeIconPath = image == null ? null : await Helper.downloadAndSaveFile(image, 'largeIcon');
       AndroidNotificationDetails androidNotificationDetails = AndroidNotificationDetails(
@@ -67,8 +79,11 @@ class MyApp extends StatelessWidget {
         channelShowBadge: true,
         largeIcon: largeIconPath == null ? null : FilePathAndroidBitmap(largeIconPath),
       );
+      int notificationId = Helper.getRandomId();
+      int expiredAt = DateTime.now().millisecondsSinceEpoch;
+      await _databaseProvider.insertNotification({'id': notificationId.toString(), 'expired_at': expiredAt});
       NotificationDetails notificationDetails = NotificationDetails(android: androidNotificationDetails);
-      await flutterLocalNotificationsPlugin.show(0, title, body, notificationDetails, payload: type);
+      await flutterLocalNotificationsPlugin.show(notificationId, title, body, notificationDetails, payload: type);
     }
   }
 
@@ -113,6 +128,7 @@ class MyApp extends StatelessWidget {
     shareUtils = new SharePreferenceUtil();
     shareUtils.instance();
     firebaseMessaging.configure(onMessage: (Map<String, dynamic> message) async {
+      print("On Message");
       String title = "";
       String body = "";
       String image = "";
@@ -131,10 +147,24 @@ class MyApp extends StatelessWidget {
       }
       showNotification(title, body, image, type);
     }, onLaunch: (Map<String, dynamic> message) async {
-      print('OnLaunch');
-      print(message);
+      String type = "";
+      if (isIOS) {
+        final notification = message['aps'];
+        type = notification['alert']['type'];
+      } else {
+        final data = message['data'];
+        type = data['type'];
+      }
+      switch (type) {
+        case "rankin":
+          MyApp.shareUtils.setString(Constants.JumpPageOnLaunch, "rankin");
+          break;
+        case "achieve":
+          MyApp.shareUtils.setString(Constants.JumpPageOnLaunch, "achieve");
+          break;
+      }
     }, onResume: (Map<String, dynamic> message) async {
-      //print('OnResume');
+      print('OnResume');
       String type = "";
       if (isIOS) {
         final notification = message['aps'];
@@ -153,22 +183,7 @@ class MyApp extends StatelessWidget {
       title: 'MONITO',
       debugShowCheckedModeBanner: false,
       navigatorKey: navigatorKey,
-      theme: ThemeData(
-          // This is the theme of your application.
-          //
-          // Try running your application with "flutter run". You'll see the
-          // application has a blue toolbar. Then, without quitting the app, try
-          // changing the primarySwatch below to Colors.green and then invoke
-          // "hot reload" (press "r" in the console where you ran "flutter run",
-          // or simply save your changes to "hot reload" in a Flutter IDE).
-          // Notice that the counter didn't reset back to zero; the application
-          // is not restarted.
-          primarySwatch: Colors.blue,
-          // This makes the visual density adapt to the platform that you run
-          // the app on. For desktop platforms, the controls will be smaller and
-          // closer together (more dense) than on mobile platforms.
-          visualDensity: VisualDensity.adaptivePlatformDensity,
-          fontFamily: "NotoSansJP"),
+      theme: ThemeData(primarySwatch: Colors.blue, visualDensity: VisualDensity.adaptivePlatformDensity, fontFamily: "NotoSansJP"),
       routes: <String, WidgetBuilder>{
         "/": (BuildContext context) => SplashPage(),
       },

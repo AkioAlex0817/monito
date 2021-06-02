@@ -147,7 +147,25 @@ class _SplashPageState extends State<SplashPage> {
             await _databaseProvider.insertOrUpdateSetting(data['profile']['id'], data['user_settings']['keepa_api_key'], data['user_settings']['price_archive_percent'], data['user_settings']['track_ranking'], data['user_settings']['low_ranking_range']);
           }
         }
-        Navigator.pushAndRemoveUntil(context, PageTransition(child: MainPage(), type: PageTransitionType.fade), (route) => false);
+        String type = await MyApp.shareUtils.getString(Constants.JumpPageOnLaunch);
+        Widget result;
+        if (type != null && type != "") {
+          switch (type) {
+            case "rankin":
+              result = MainPage(initPage: Constants.RankInPage);
+              break;
+            case "achieve":
+              result = MainPage(initPage: Constants.ConditionPage);
+              break;
+            default:
+              result = MainPage();
+              break;
+          }
+          await MyApp.shareUtils.setString(Constants.JumpPageOnLaunch, "");
+        } else {
+          result = MainPage();
+        }
+        Navigator.pushAndRemoveUntil(context, PageTransition(child: result, type: PageTransitionType.fade), (route) => false);
       }
     }
   }

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -111,5 +112,12 @@ class Helper {
   static Future<bool> isSignIn() async {
     String tokenString = await MyApp.shareUtils.getString(Constants.SharePreferencesKey);
     return !Helper.checkEmptyToken(tokenString);
+  }
+
+  static int getRandomId() {
+    int min = 10;
+    int max = 999999999;
+    final _random = new Random();
+    return min + _random.nextInt(max - min);
   }
 }

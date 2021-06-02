@@ -1,7 +1,9 @@
 import 'dart:async';
 
+import 'package:background_fetch/background_fetch.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:monito/Database/DatabaseProvider.dart';
 import 'package:monito/Helper/Constants.dart';
 import 'package:monito/Helper/Helper.dart';
@@ -24,7 +26,7 @@ import 'package:monito/Helper/IntExtensions.dart';
 class MainPage extends StatefulWidget {
   final int initPage;
 
-  MainPage({this.initPage = null});
+  MainPage({this.initPage});
 
   @override
   _MainPageState createState() => _MainPageState();
@@ -43,12 +45,50 @@ class _MainPageState extends State<MainPage> {
     if (widget.initPage != null) {
       Timer(Duration(milliseconds: 50), () => _switchPage(widget.initPage));
     }
+    _initBackgroundSetting();
   }
 
   @override
   void dispose() {
     pageController?.dispose();
     super.dispose();
+  }
+
+  Future<void> _initBackgroundSetting() async {
+    BackgroundFetch.configure(
+        BackgroundFetchConfig(
+          minimumFetchInterval: 15,
+          stopOnTerminate: false,
+          enableHeadless: true,
+          requiresBatteryNotLow: false,
+          requiresCharging: false,
+          requiresStorageNotLow: false,
+          requiresDeviceIdle: false,
+          requiredNetworkType: NetworkType.ANY,
+        ), (String taskID) async {
+      print("Background Job Started");
+      DatabaseProvider databaseProvider = DatabaseProvider.db;
+      int targetTimeStamp = DateTime.now().subtract(Duration(hours: 1)).microsecondsSinceEpoch;
+      List<Map<String, dynamic>> expiredNotifications = await databaseProvider.getExpiredNotifications(targetTimeStamp);
+      if (expiredNotifications.length > 0) {
+        expiredNotifications.map((item) {
+          try {
+            MyApp.flutterLocalNotificationsPlugin.cancel(int.parse(item['id']));
+          } catch (_) {}
+        });
+        await databaseProvider.removeExpiredNotifications(targetTimeStamp);
+      }
+      BackgroundFetch.finish(taskID);
+    }).then((int status) {
+      print('[BackgroundFetch] configure success: $status');
+      setState(() {});
+    }).catchError((e) {
+      print('[BackgroundFetch] configure ERROR: $e');
+      setState(() {});
+    });
+    setState(() {});
+
+    if (!mounted) return;
   }
 
   Widget tabItem(var pos, var icon, var name) {
