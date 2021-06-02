@@ -35,7 +35,8 @@ int allowPurchasedList = 0;
 bool allowRDB = false;
 String deviceToken = "";
 
-void backgroundFetchHeadlessTask(String taskId) async {
+void backgroundFetchHeadlessTask(HeadlessTask task) async {
+  var taskId = task.taskId;
   BackgroundFetch.finish(taskId);
 }
 
