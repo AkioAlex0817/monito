@@ -68,7 +68,7 @@ class _MainPageState extends State<MainPage> {
         ), (String taskID) async {
       print("Background Job Started");
       DatabaseProvider databaseProvider = DatabaseProvider.db;
-      int targetTimeStamp = DateTime.now().subtract(Duration(hours: 1)).microsecondsSinceEpoch;
+      int targetTimeStamp = DateTime.now().subtract(Duration(minutes: 15)).microsecondsSinceEpoch;
       List<Map<String, dynamic>> expiredNotifications = await databaseProvider.getExpiredNotifications(targetTimeStamp);
       if (expiredNotifications.length > 0) {
         expiredNotifications.map((item) {
@@ -131,7 +131,7 @@ class _MainPageState extends State<MainPage> {
                         await _databaseProvider.removeAllCategory();
                         await _databaseProvider.removeAllSuppliers();
                         Navigator.of(context, rootNavigator: true).pop("Discard");
-                        MyApp.firebaseMessaging.deleteInstanceID();
+                        //MyApp.firebaseMessaging.deleteInstanceID();
                         Navigator.pushNamedAndRemoveUntil(context, "/", (_) => false);
                       },
                     ),

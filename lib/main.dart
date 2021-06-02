@@ -7,9 +7,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
 import 'package:monito/Helper/Constants.dart';
+import 'package:monito/Helper/HttpHelper.dart';
 import 'package:monito/Pages/SplashPage/SplashPage.dart';
 import 'package:package_info/package_info.dart';
 import 'package:page_transition/page_transition.dart';
+import 'package:sprintf/sprintf.dart';
 import 'Database/DatabaseProvider.dart';
 import 'Helper/Helper.dart';
 import 'Helper/SharePreferenceUtil.dart';
@@ -178,6 +180,18 @@ class MyApp extends StatelessWidget {
     if (Platform.isIOS) {
       firebaseMessaging.requestNotificationPermissions(const IosNotificationSettings(sound: true, badge: true, alert: true));
     }
+    firebaseMessaging.onTokenRefresh.listen((token) async {
+      print("Firebase DeviceToken Refreshed. Token=$token");
+      String oldToken = await MyApp.shareUtils.getString(Constants.DeviceToken);
+      if (token != oldToken) {
+        await MyApp.shareUtils.setString(Constants.DeviceToken, token);
+        deviceToken = token;
+        if (await Helper.isSignIn()) {
+          String url = sprintf("%sapi/me?is_ios=%d&device_token=%s&save_token=%s", [Constants.URL, isIOS ? 1 : 0, token, isTest ? "0" : "1"]);
+          await HttpHelper.authGet(context, null, url, {});
+        }
+      }
+    });
 
     return MaterialApp(
       title: 'MONITO',

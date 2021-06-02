@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 class Constants {
   static const SharePreferencesKey = "token_string";
   static const JumpPageOnLaunch = "jump_page";
+  static const DeviceToken = "device_token";
 
   /*static const URL = "http://192.168.31.200/fastalert/public/";
   static const client_secret = "wX8BtNCmU2I7j2Vt163JJKJBmXYXI6akwkaoTxVb";*/
