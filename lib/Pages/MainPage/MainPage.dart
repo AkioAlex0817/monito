@@ -68,7 +68,7 @@ class _MainPageState extends State<MainPage> {
         ), (String taskID) async {
       print("Background Job Started");
       DatabaseProvider databaseProvider = DatabaseProvider.db;
-      int targetTimeStamp = DateTime.now().subtract(Duration(minutes: 15)).microsecondsSinceEpoch;
+      int targetTimeStamp = DateTime.now().subtract(Duration(minutes: 10)).microsecondsSinceEpoch;
       List<Map<String, dynamic>> expiredNotifications = await databaseProvider.getExpiredNotifications(targetTimeStamp);
       if (expiredNotifications.length > 0) {
         expiredNotifications.map((item) {
