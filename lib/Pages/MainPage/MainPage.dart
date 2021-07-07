@@ -55,11 +55,11 @@ class _MainPageState extends State<MainPage> {
   }
 
   test() async{
-    int targetTimeStamp = DateTime.now().microsecondsSinceEpoch;
+    int targetTimeStamp = DateTime.now().subtract(Duration(minutes: 10)).millisecondsSinceEpoch;
     List<Map<String, dynamic>> results = await _databaseProvider.getExpiredNotifications(targetTimeStamp);
     print(results.length);
     print(results[0]);
-    MyApp.flutterLocalNotificationsPlugin.cancel(694070587);
+    //MyApp.flutterLocalNotificationsPlugin.cancel(694070587);
   }
 
   Future<void> _initBackgroundSetting() async {
@@ -72,11 +72,11 @@ class _MainPageState extends State<MainPage> {
           requiresCharging: false,
           requiresStorageNotLow: false,
           requiresDeviceIdle: false,
-          requiredNetworkType: NetworkType.ANY,
+          requiredNetworkType: NetworkType.NONE,
         ), (String taskID) async {
       print("Background Job Started");
       DatabaseProvider databaseProvider = DatabaseProvider.db;
-      int targetTimeStamp = DateTime.now().subtract(Duration(minutes: 10)).microsecondsSinceEpoch;
+      int targetTimeStamp = DateTime.now().subtract(Duration(minutes: 10)).millisecondsSinceEpoch;
       List<Map<String, dynamic>> expiredNotifications = await databaseProvider.getExpiredNotifications(targetTimeStamp);
       if (expiredNotifications.length > 0) {
         expiredNotifications.map((item) {
@@ -610,12 +610,12 @@ class _MainPageState extends State<MainPage> {
             },
           ),
         ),
-        /*appBar: AppBar(
+        appBar: AppBar(
           title: InkWell(
             onTap: test,
             child: Text("Test"),
           ),
-        ),*/
+        ),
       ),
     );
   }
