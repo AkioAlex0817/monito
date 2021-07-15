@@ -191,7 +191,7 @@ class _RankDetailPageState extends State<RankDetailPage> {
                                                 child: Material(
                                                   type: MaterialType.transparency,
                                                   child: Text(
-                                                    widget.rankModel.title,
+                                                    widget.rankModel.title ?? "",
                                                     textAlign: TextAlign.left,
                                                     style: TextStyle(color: Colors.black, fontSize: 13.5, fontWeight: FontWeight.bold),
                                                     maxLines: 3,

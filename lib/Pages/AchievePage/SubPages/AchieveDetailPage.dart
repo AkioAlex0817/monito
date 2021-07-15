@@ -159,7 +159,7 @@ class _AchieveDetailPageState extends State<AchieveDetailPage> {
                                               child: Material(
                                                 type: MaterialType.transparency,
                                                 child: Text(
-                                                  widget.achieveModel.title,
+                                                  widget.achieveModel.title ?? "",
                                                   textAlign: TextAlign.left,
                                                   style: TextStyle(color: Colors.black, fontSize: 13.5, fontWeight: FontWeight.bold),
                                                   maxLines: 3,

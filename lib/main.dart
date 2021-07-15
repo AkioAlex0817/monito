@@ -38,7 +38,7 @@ String deviceToken = "";
 void backgroundFetchHeadlessTask(HeadlessTask task) async {
   var taskId = task.taskId;
   bool timeout = task.timeout;
-  if(timeout){
+  if (timeout) {
     BackgroundFetch.finish(taskId);
   }
 }

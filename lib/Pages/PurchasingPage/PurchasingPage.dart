@@ -67,7 +67,12 @@ class _PurchasingPageState extends State<PurchasingPage> {
               _currentPage++;
               _hasNextPage = _currentPage <= result['data']['last_page'];
               for (var item in result['data']['data']) {
-                item['category_name'] = categories.firstWhere((element) => element['cat_id'] == item['cat_id'].toString())['name'];
+                var category = categories.firstWhere((element) => element['cat_id'] == item['cat_id'].toString(), orElse: () => null);
+                if (category != null) {
+                  item['category_name'] = category['name'];
+                } else {
+                  item['category_name'] = "--";
+                }
                 lists.add(PurchasingModel.fromJson(item));
               }
               if (!_isInit) {

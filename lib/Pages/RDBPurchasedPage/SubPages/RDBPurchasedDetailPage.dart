@@ -214,7 +214,7 @@ class _RDBPurchasedDetailPageState extends State<RDBPurchasedDetailPage> {
                                                       child: Material(
                                                         type: MaterialType.transparency,
                                                         child: Text(
-                                                          widget.rdbPurchasedModel.title,
+                                                          widget.rdbPurchasedModel.title ?? "",
                                                           textAlign: TextAlign.left,
                                                           style: TextStyle(color: Colors.black, fontSize: 13.5, fontWeight: FontWeight.bold),
                                                           maxLines: 3,
