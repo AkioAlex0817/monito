@@ -178,7 +178,7 @@ class _PublishPageState extends State<PublishPage> {
                                           child: Container(
                                             alignment: Alignment.topLeft,
                                             child: Text(
-                                              widget.purchasingModel.title,
+                                              widget.purchasingModel.title ?? "",
                                               textAlign: TextAlign.left,
                                               style: TextStyle(color: Colors.black, fontSize: 13.5, fontWeight: FontWeight.bold),
                                               maxLines: 3,

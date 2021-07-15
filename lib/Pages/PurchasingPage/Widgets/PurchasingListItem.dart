@@ -63,7 +63,7 @@ class PurchasingListItem extends StatelessWidget {
                           child: Material(
                             type: MaterialType.transparency,
                             child: Text(
-                              purchasingModel.title,
+                              purchasingModel.title ?? "",
                               style: TextStyle(color: Colors.black, fontSize: 14, fontWeight: FontWeight.bold),
                               maxLines: 2,
                               softWrap: true,

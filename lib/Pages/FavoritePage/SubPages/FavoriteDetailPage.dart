@@ -92,7 +92,7 @@ class _FavoriteDetailPageState extends State<FavoriteDetailPage> {
                                               child: Material(
                                                 type: MaterialType.transparency,
                                                 child: Text(
-                                                  widget.favoriteModel.title,
+                                                  widget.favoriteModel.title ?? "",
                                                   textAlign: TextAlign.left,
                                                   style: TextStyle(color: Colors.black, fontSize: 13.5, fontWeight: FontWeight.bold),
                                                   maxLines: 3,
