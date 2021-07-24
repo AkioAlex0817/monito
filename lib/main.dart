@@ -69,6 +69,7 @@ class MyApp extends StatelessWidget {
         importance: Importance.high,
         icon: "icon",
         channelShowBadge: true,
+        autoCancel: true,
         largeIcon: largeIconPath == null ? null : FilePathAndroidBitmap(largeIconPath),
       );
       int notificationId = Helper.getRandomId();
