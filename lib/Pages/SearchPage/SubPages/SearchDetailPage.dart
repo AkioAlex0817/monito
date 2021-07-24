@@ -251,7 +251,7 @@ class _SearchDetailPageState extends State<SearchDetailPage> {
                                   flex: 2,
                                   child: LabelWidget(
                                     color: Constants.ButtonColor,
-                                    label: "新品価格",
+                                    label: "Amazon価格",
                                     fontSize: 14,
                                   ),
                                 ),
@@ -303,7 +303,7 @@ class _SearchDetailPageState extends State<SearchDetailPage> {
                                   flex: 2,
                                   child: LabelWidget(
                                     color: Constants.ButtonColor,
-                                    label: "新品価格",
+                                    label: "中古価格",
                                     fontSize: 14,
                                   ),
                                 ),
