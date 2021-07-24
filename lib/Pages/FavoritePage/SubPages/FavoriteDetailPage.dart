@@ -10,7 +10,6 @@ import 'package:monito/Pages/WebPages/WebPage.dart';
 import 'package:monito/Widgets/LabelWidget.dart';
 import 'package:monito/Widgets/LoadingButton.dart';
 import 'package:monito/Widgets/ZoomOverlayWidget.dart';
-import 'package:monito/main.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:sprintf/sprintf.dart';
 

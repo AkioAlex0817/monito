@@ -34,42 +34,7 @@ class DatabaseProvider {
           "track_ranking INTEGER(11), "
           "low_ranking_range INTEGER(11)"
           ")");
-      await database.execute("CREATE TABLE notifications("
-          "id TEXT(20) PRIMARY KEY NOT NULL, "
-          "expired_at INTEGER(20)"
-          ")");
     });
-  }
-
-  Future<bool> insertNotification(Map<String, dynamic> item) async {
-    final Database db = await database;
-    try {
-      await db.insert("notifications", item, conflictAlgorithm: ConflictAlgorithm.replace);
-    } catch (error) {
-      print("Insert notification Error: $error");
-      return false;
-    }
-    return true;
-  }
-
-  Future<List<Map<String, dynamic>>> getExpiredNotifications(int targetTimeStamp) async {
-    final Database db = await database;
-    try {
-      return await db.query("notifications", where: "expired_at <= ?", whereArgs: [targetTimeStamp]);
-    } catch (error) {
-      return [];
-    }
-  }
-
-  Future<bool> removeExpiredNotifications(int targetTimeStamp) async {
-    final Database db = await database;
-    try {
-      await db.delete("notifications", where: "expired_at <= ?", whereArgs: [targetTimeStamp]);
-    } catch (error) {
-      print("Remove expired notifications Error: $error");
-      return false;
-    }
-    return true;
   }
 
   Future<bool> insertOrUpdateSetting(int user_id, String keepa_api_key, int price_archive_percent, int track_ranking, int low_ranking_range) async {

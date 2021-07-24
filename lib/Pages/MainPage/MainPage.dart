@@ -1,9 +1,7 @@
 import 'dart:async';
 
-import 'package:background_fetch/background_fetch.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:monito/Database/DatabaseProvider.dart';
 import 'package:monito/Helper/Constants.dart';
 import 'package:monito/Helper/Helper.dart';
@@ -16,6 +14,7 @@ import 'package:monito/Pages/PurchasingPage/PurchasingPage.dart';
 import 'package:monito/Pages/RDBPurchasedPage/RDBPurchasedPage.dart';
 import 'package:monito/Pages/RDBPurchasingPage/RDBPurchasingPage.dart';
 import 'package:monito/Pages/RankInPage/RankInPage.dart';
+import 'package:monito/Pages/SearchPage/SearchPage.dart';
 import 'package:monito/Pages/SettingPage/OnlineSettingPage.dart';
 import 'package:monito/Pages/SettingPage/Widgets/SettingListItem.dart';
 import 'package:monito/Pages/UserSetting/PasswordUpdatePage.dart';
@@ -45,58 +44,12 @@ class _MainPageState extends State<MainPage> {
     if (widget.initPage != null) {
       Timer(Duration(milliseconds: 50), () => _switchPage(widget.initPage));
     }
-    _initBackgroundSetting();
   }
 
   @override
   void dispose() {
     pageController?.dispose();
     super.dispose();
-  }
-
-  test() async{
-    int targetTimeStamp = DateTime.now().microsecondsSinceEpoch;
-    List<Map<String, dynamic>> results = await _databaseProvider.getExpiredNotifications(targetTimeStamp);
-    print(results.length);
-    print(results[0]);
-    MyApp.flutterLocalNotificationsPlugin.cancel(694070587);
-  }
-
-  Future<void> _initBackgroundSetting() async {
-    BackgroundFetch.configure(
-        BackgroundFetchConfig(
-          minimumFetchInterval: 15,
-          stopOnTerminate: false,
-          enableHeadless: true,
-          requiresBatteryNotLow: false,
-          requiresCharging: false,
-          requiresStorageNotLow: false,
-          requiresDeviceIdle: false,
-          requiredNetworkType: NetworkType.ANY,
-        ), (String taskID) async {
-      print("Background Job Started");
-      DatabaseProvider databaseProvider = DatabaseProvider.db;
-      int targetTimeStamp = DateTime.now().subtract(Duration(minutes: 15)).microsecondsSinceEpoch;
-      List<Map<String, dynamic>> expiredNotifications = await databaseProvider.getExpiredNotifications(targetTimeStamp);
-      if (expiredNotifications.length > 0) {
-        expiredNotifications.map((item) {
-          try {
-            MyApp.flutterLocalNotificationsPlugin.cancel(int.parse(item['id']));
-          } catch (_) {}
-        });
-        await databaseProvider.removeExpiredNotifications(targetTimeStamp);
-      }
-      BackgroundFetch.finish(taskID);
-    }).then((int status) {
-      print('[BackgroundFetch] configure success: $status');
-      setState(() {});
-    }).catchError((e) {
-      print('[BackgroundFetch] configure ERROR: $e');
-      setState(() {});
-    });
-    setState(() {});
-
-    if (!mounted) return;
   }
 
   Widget tabItem(var pos, var icon, var name) {
@@ -139,7 +92,6 @@ class _MainPageState extends State<MainPage> {
                         await _databaseProvider.removeAllCategory();
                         await _databaseProvider.removeAllSuppliers();
                         Navigator.of(context, rootNavigator: true).pop("Discard");
-                        //MyApp.firebaseMessaging.deleteInstanceID();
                         Navigator.pushNamedAndRemoveUntil(context, "/", (_) => false);
                       },
                     ),
@@ -245,6 +197,21 @@ class _MainPageState extends State<MainPage> {
     }
   }
 
+  onSearchPageHandler() {
+    Navigator.push(
+      context,
+      PageTransition(
+        child: SearchPage(),
+        type: PageTransitionType.rightToLeft,
+        inheritTheme: true,
+        curve: Curves.easeIn,
+        ctx: context,
+        duration: Duration(milliseconds: 150),
+        reverseDuration: Duration(milliseconds: 150),
+      ),
+    );
+  }
+
   _emptySettingHandler() {
     showCupertinoDialog(
       context: context,
@@ -290,6 +257,7 @@ class _MainPageState extends State<MainPage> {
     return WillPopScope(
       onWillPop: _backHandler,
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         backgroundColor: Constants.BackgroundColor,
         bottomNavigationBar: Stack(
           alignment: Alignment.topCenter,
@@ -375,9 +343,58 @@ class _MainPageState extends State<MainPage> {
                 case 1:
                   return Column(
                     children: [
+                      SizedBox(
+                        height: 60,
+                        width: double.infinity,
+                        child: Container(
+                          color: Constants.StatusBarColor,
+                          padding: EdgeInsets.only(left: 25, right: 10, top: 7, bottom: 7),
+                          child: Row(
+                            children: [
+                              Expanded(
+                                child: InkWell(
+                                  onTap: onSearchPageHandler,
+                                  child: Container(
+                                    constraints: BoxConstraints.expand(),
+                                    decoration: BoxDecoration(color: Colors.white, borderRadius: BorderRadius.circular(5)),
+                                    padding: EdgeInsets.symmetric(horizontal: 10),
+                                    child: Row(
+                                      children: [
+                                        SizedBox(
+                                          width: 30,
+                                          height: 30,
+                                          child: Icon(Icons.search, size: 30, color: Colors.grey),
+                                        ),
+                                        Expanded(
+                                          child: Text(
+                                            "キーワード、JAN、ASIN、ISBNで検索",
+                                            style: TextStyle(letterSpacing: 1, color: Color.fromARGB(255, 192, 202, 204), fontSize: 13, fontWeight: FontWeight.bold),
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            softWrap: true,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              10.width,
+                              SizedBox(
+                                width: 50,
+                                height: 50,
+                                child: Container(
+                                  decoration: BoxDecoration(color: Theme.of(context).primaryColor, borderRadius: BorderRadius.circular(50)),
+                                  child: Icon(Icons.search, size: 30, color: Colors.white),
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      ),
                       Expanded(
                         child: Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 30, vertical: 20),
+                          padding: EdgeInsets.symmetric(horizontal: 30, vertical: 5),
                           child: Container(
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,

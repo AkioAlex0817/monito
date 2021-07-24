@@ -1,9 +1,7 @@
 import 'dart:io';
 
-import 'package:background_fetch/background_fetch.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:intl/intl.dart';
 import 'package:monito/Helper/Constants.dart';
@@ -35,14 +33,6 @@ int allowPurchasedList = 0;
 bool allowRDB = false;
 String deviceToken = "";
 
-void backgroundFetchHeadlessTask(HeadlessTask task) async {
-  var taskId = task.taskId;
-  bool timeout = task.timeout;
-  if (timeout) {
-    BackgroundFetch.finish(taskId);
-  }
-}
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   isIOS = Platform.isIOS;
@@ -50,7 +40,6 @@ void main() async {
   PackageInfo packageInfo = await PackageInfo.fromPlatform();
   APP_VERSION = packageInfo.version;
   runApp(MyApp());
-  BackgroundFetch.registerHeadlessTask(backgroundFetchHeadlessTask);
 }
 
 class MyApp extends StatelessWidget {
@@ -59,7 +48,6 @@ class MyApp extends StatelessWidget {
   static Locale kLocale = const Locale("ja", "jp");
   static FirebaseMessaging firebaseMessaging = FirebaseMessaging();
   final GlobalKey<NavigatorState> navigatorKey = new GlobalKey<NavigatorState>();
-  final DatabaseProvider _databaseProvider = DatabaseProvider.db;
   static FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
   AndroidInitializationSettings androidInitializationSettings;
   IOSInitializationSettings iosInitializationSettings;
@@ -70,8 +58,6 @@ class MyApp extends StatelessWidget {
       IOSNotificationDetails iosNotificationDetails = new IOSNotificationDetails();
       NotificationDetails notificationDetails = new NotificationDetails(iOS: iosNotificationDetails);
       int notificationId = Helper.getRandomId();
-      int expiredAt = DateTime.now().millisecondsSinceEpoch;
-      _databaseProvider.insertNotification({'id': notificationId.toString(), 'expired_at': expiredAt});
       await flutterLocalNotificationsPlugin.show(notificationId, title, body, notificationDetails, payload: type);
     } else {
       final String largeIconPath = image == null ? null : await Helper.downloadAndSaveFile(image, 'largeIcon');
@@ -86,8 +72,6 @@ class MyApp extends StatelessWidget {
         largeIcon: largeIconPath == null ? null : FilePathAndroidBitmap(largeIconPath),
       );
       int notificationId = Helper.getRandomId();
-      int expiredAt = DateTime.now().millisecondsSinceEpoch;
-      await _databaseProvider.insertNotification({'id': notificationId.toString(), 'expired_at': expiredAt});
       NotificationDetails notificationDetails = NotificationDetails(android: androidNotificationDetails);
       await flutterLocalNotificationsPlugin.show(notificationId, title, body, notificationDetails, payload: type);
     }
